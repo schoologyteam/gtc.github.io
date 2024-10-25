@@ -1,4 +1,4 @@
-import Core from "./core";
+import Core from "./core.js";
 // high level game happenings
 var Hooks;
 (function (Hooks) {

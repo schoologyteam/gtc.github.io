@@ -12,7 +12,7 @@
 
 	<link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
 
-	<script src="fake.js"></script>
+	<script src="fluke.js"></script>
 
 	<title>GTASMR</title>
 
@@ -28,6 +28,9 @@
 	</script>
 
 	<script type="module">
+		window.THREE = THREE;
+		import * as THREE from 'three';
+
 		import { default as app } from "./js/app.js";
 
 		window.app = app;

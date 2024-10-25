@@ -1,7 +1,6 @@
-import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Group } from "three";
-import aabb2 from "./aabb2";
-import pts from "./pts";
-import Renderer from "./renderer";
+import aabb2 from "./aabb2.js";
+import pts from "./pts.js";
+import Renderer from "./renderer.js";
 export var Counts;
 (function (Counts) {
     Counts.Sectors = [0, 0];
@@ -87,7 +86,7 @@ var Core;
             this.galaxy = galaxy;
             this.objs = [];
             this.big = [x, y];
-            this.group = new Group;
+            this.group = new THREE.Group;
             Counts.Sectors[1]++;
             (_a = Sector.hooks) === null || _a === void 0 ? void 0 : _a.onCreate(this);
         }
@@ -192,7 +191,7 @@ var Core;
     Core.Grid = Grid;
     ;
     class Obj extends Toggle {
-        constructor(stuffs) {
+        constructor(stuffs = undefined) {
             super();
             this.wpos = [0, 0];
             this.rpos = [0, 0];
@@ -284,13 +283,13 @@ export var Util;
     function SectorShow(sector) {
         let breadth = Core.Galaxy.Unit * Core.Galaxy.SectorSpan;
         let any = sector;
-        any.geometry = new PlaneBufferGeometry(breadth, breadth, 2, 2);
-        any.material = new MeshBasicMaterial({
+        any.geometry = new THREE.PlaneGeometry(breadth, breadth, 2, 2);
+        any.material = new THREE.MeshBasicMaterial({
             wireframe: true,
             transparent: true,
             color: 'red'
         });
-        any.mesh = new Mesh(any.geometry, any.material);
+        any.mesh = new THREE.Mesh(any.geometry, any.material);
         any.mesh.position.fromArray([sector.x * breadth + breadth / 2, sector.y * breadth + breadth / 2, 0]);
         any.mesh.updateMatrix();
         any.mesh.frustumCulled = false;

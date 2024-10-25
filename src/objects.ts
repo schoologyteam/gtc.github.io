@@ -1,14 +1,12 @@
-import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Color } from "three";
+import App from "./app.js";
 
-import App from "./app";
-
-import pts from "./pts";
-import Core from "./core";
-import Renderer from "./renderer";
-import View from "./view";
-import Game from "./game";
-import GTA from "./gta";
-import City from "./city";
+import pts from "./pts.js";
+import Core from "./core.js";
+import Renderer from "./renderer.js";
+import View from "./view.js";
+import Game from "./game.js";
+import GTA from "./gta.js";
+import City from "./city.js";
 
 namespace Objects {
 
@@ -22,7 +20,7 @@ namespace Objects {
 		running = false;
 		idling = false;
 		constructor() {
-			super();
+			super(undefined);
 			this.size = [33, 33];
 		}
 		make() {

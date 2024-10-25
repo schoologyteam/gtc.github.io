@@ -1,7 +1,7 @@
-import City from "./city";
-import Hooks from "./hooks";
-import Objects from "./objects";
-import View from "./view";
+import City from "./city.js";
+import Hooks from "./hooks.js";
+import Objects from "./objects.js";
+import View from "./view.js";
 export var GTA;
 (function (GTA) {
     GTA.NO_VAR = false;

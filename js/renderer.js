@@ -1,6 +1,4 @@
-import { default as THREE, OrthographicCamera, Clock, Scene, WebGLRenderer, TextureLoader, WebGLRenderTarget, ShaderMaterial, Mesh, PlaneBufferGeometry, Color, NearestFilter, RGBAFormat, AmbientLight, DirectionalLight } from 'three';
-import App from './app';
-export { THREE };
+import App from './app.js';
 const fragmentBackdrop = `
 varying vec2 vUv;
 //uniform float time;
@@ -63,38 +61,38 @@ var Renderer;
     Renderer.render = render;
     function init() {
         console.log('renderer init');
-        Renderer.clock = new Clock();
-        Renderer.scene = new Scene();
-        Renderer.scene.background = new Color('#292929');
-        Renderer.scenert = new Scene();
-        Renderer.ambientLight = new AmbientLight(0x3a454f);
-        Renderer.directionalLight = new DirectionalLight(0x355886, 1.0);
+        Renderer.clock = new THREE.Clock();
+        Renderer.scene = new THREE.Scene();
+        Renderer.scene.background = new THREE.Color('#292929');
+        Renderer.scenert = new THREE.Scene();
+        Renderer.ambientLight = new THREE.AmbientLight(0x3a454f);
+        Renderer.directionalLight = new THREE.DirectionalLight(0x355886, 1.0);
         Renderer.directionalLight.position.set(0, 0, 1);
         Renderer.scene.add(Renderer.directionalLight);
         Renderer.scene.add(Renderer.directionalLight.target);
         Renderer.scene.add(Renderer.ambientLight);
         if (Renderer.DPI_UPSCALED_RT)
             Renderer.ndpi = window.devicePixelRatio;
-        Renderer.target = new WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+        Renderer.target = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
             minFilter: THREE.NearestFilter,
             magFilter: THREE.NearestFilter,
             format: THREE.RGBFormat
         });
-        Renderer.renderer = new WebGLRenderer({ antialias: false });
+        Renderer.renderer = new THREE.WebGLRenderer({ antialias: false });
         Renderer.renderer.setPixelRatio(Renderer.ndpi);
         Renderer.renderer.setSize(100, 100);
         Renderer.renderer.autoClear = true;
         Renderer.renderer.setClearColor(0xffffff, 0);
         document.body.appendChild(Renderer.renderer.domElement);
         window.addEventListener('resize', onWindowResize, false);
-        Renderer.materialPost = new ShaderMaterial({
+        Renderer.materialPost = new THREE.ShaderMaterial({
             uniforms: { tDiffuse: { value: Renderer.target.texture } },
             vertexShader: vertexScreen,
             fragmentShader: fragmentPost,
             depthWrite: false
         });
         onWindowResize();
-        Renderer.quadPost = new Mesh(Renderer.plane, Renderer.materialPost);
+        Renderer.quadPost = new THREE.Mesh(Renderer.plane, Renderer.materialPost);
         //quadPost.position.z = -100;
         Renderer.scenert.add(Renderer.quadPost);
         window.Renderer = Renderer;
@@ -115,7 +113,7 @@ var Renderer;
         }
         console.log(`window inner [${Renderer.w}, ${Renderer.h}], new is [${Renderer.w2}, ${Renderer.h2}]`);
         Renderer.target.setSize(Renderer.w2, Renderer.h2);
-        Renderer.plane = new PlaneBufferGeometry(Renderer.w2, Renderer.h2);
+        Renderer.plane = new THREE.PlaneGeometry(Renderer.w2, Renderer.h2);
         if (Renderer.quadPost)
             Renderer.quadPost.geometry = Renderer.plane;
         /*camera = new PerspectiveCamera(
@@ -133,7 +131,7 @@ var Renderer;
     function load_texture(file, key) {
         if (mem[key || file])
             return mem[key || file];
-        let texture = new TextureLoader().load(file + `?v=${App.salt}`, () => {
+        let texture = new THREE.TextureLoader().load(file + `?v=${App.salt}`, () => {
             //renderer.initTexture(texture);
         });
         texture.generateMipmaps = false;
@@ -148,16 +146,16 @@ var Renderer;
     Renderer.load_texture = load_texture;
     function make_render_target(w, h) {
         const o = {
-            minFilter: NearestFilter,
-            magFilter: NearestFilter,
-            format: RGBAFormat
+            minFilter: THREE.NearestFilter,
+            magFilter: THREE.NearestFilter,
+            format: THREE.RGBAFormat
         };
-        let target = new WebGLRenderTarget(w, h, o);
+        let target = new THREE.WebGLRenderTarget(w, h, o);
         return target;
     }
     Renderer.make_render_target = make_render_target;
     function ortographic_camera(w, h) {
-        let camera = new OrthographicCamera(w / -2, w / 2, h / 2, h / -2, -100, 100);
+        let camera = new THREE.OrthographicCamera(w / -2, w / 2, h / 2, h / -2, -100, 100);
         camera.updateProjectionMatrix();
         return camera;
     }

@@ -1,8 +1,8 @@
-import Core from "./core";
-import Game from "./game";
-import pts from "./pts";
-import aabb2 from "./aabb2";
-import GTA from "./gta";
+import Core from "./core.js";
+import Game from "./game.js";
+import pts from "./pts.js";
+import aabb2 from "./aabb2.js";
+import GTA from "./gta.js";
 export var City;
 (function (City) {
     City.sounds = { footsteps: [] };
@@ -59,7 +59,7 @@ export var City;
             GTA.view.add(obj);
         };
         const tenement = (pos) => {
-            let obj = new Core.Obj;
+            let obj = new Core.Obj();
             let properties = Object.assign(Object.assign({}, block_tenement), { bind: obj });
             properties.mask = 'interiors/casual/concaveMask.bmp';
             new Game.Sprite(properties);

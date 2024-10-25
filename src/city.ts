@@ -1,11 +1,11 @@
-import Core from "./core";
-import Hooks from "./hooks";
-import Objects from "./objects";
-import View from "./view";
-import Game from "./game";
-import pts from "./pts";
-import aabb2 from "./aabb2";
-import GTA from "./gta";
+import Core from "./core.js";
+import Hooks from "./hooks.js";
+import Objects from "./objects.js";
+import View from "./view.js";
+import Game from "./game.js";
+import pts from "./pts.js";
+import aabb2 from "./aabb2.js";
+import GTA from "./gta.js";
 
 export namespace City {
 
@@ -73,7 +73,7 @@ export namespace City {
 		};
 
 		const tenement = (pos: vec2) => {
-			let obj = new Core.Obj;
+			let obj = new Core.Obj();
 			let properties = { ...block_tenement, bind: obj } as Game.Sprite.Parameters;
 			properties.mask = 'interiors/casual/concaveMask.bmp'
 			new Game.Sprite(properties);

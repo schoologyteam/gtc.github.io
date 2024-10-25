@@ -1,14 +1,12 @@
-import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector2, Vector3, Color, RedFormat } from "three";
+import App from "./app.js";
 
-import App from "./app";
+import pts from "./pts.js";
+import Renderer from "./renderer.js";
 
-import pts from "./pts";
-import Renderer from "./renderer";
-
-import Core, { Counts } from "./core";
-import Objects from "./objects";
-import Hooks from "./hooks";
-import GTA from "./gta";
+import Core, { Counts } from "./core.js";
+import Objects from "./objects.js";
+import Hooks from "./hooks.js";
+import GTA from "./gta.js";
 
 // the view manages everthng dont ask
 

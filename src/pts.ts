@@ -1,4 +1,4 @@
-import aabb2 from "./aabb2";
+import aabb2 from "./aabb2.js";
 
 export interface Pt { x: number; y: number };
 

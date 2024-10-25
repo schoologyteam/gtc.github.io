@@ -1,6 +1,5 @@
-import { Mesh, PlaneBufferGeometry, MeshPhongMaterial, Matrix3, Vector2 } from "three";
-import Core, { Counts } from "./core";
-import Renderer from "./renderer";
+import Core, { Counts } from "./core.js";
+import Renderer from "./renderer.js";
 export var Game;
 (function (Game) {
     ;
@@ -9,11 +8,11 @@ export var Game;
         constructor(properties) {
             super(properties, Counts.Sprites);
             this.properties = properties;
-            this.offset = new Vector2(0, 0);
-            this.repeat = new Vector2(1, 1);
-            this.center = new Vector2(0, 1);
+            this.offset = new THREE.Vector2(0, 0);
+            this.repeat = new THREE.Vector2(1, 1);
+            this.center = new THREE.Vector2(0, 1);
             this.rotation = 0;
-            this.spriteMatrix = new Matrix3;
+            this.spriteMatrix = new THREE.Matrix3;
         }
         update() {
             var _a, _b;
@@ -37,7 +36,7 @@ export var Game;
         create() {
             let w = this.properties.bind.size[0];
             let h = this.properties.bind.size[1];
-            this.geometry = new PlaneBufferGeometry(w, h);
+            this.geometry = new THREE.PlaneGeometry(w, h);
             this.material = MySpriteMaterial({
                 map: Renderer.load_texture(`sty/${this.properties.sty}`),
                 transparent: true,
@@ -47,7 +46,7 @@ export var Game;
                 blurMap: (this.properties.blur ? Renderer.load_texture(`sty/${this.properties.blur}`) : null),
                 maskMap: (this.properties.mask ? Renderer.load_texture(`sty/${this.properties.mask}`) : null)
             });
-            this.mesh = new Mesh(this.geometry, this.material);
+            this.mesh = new THREE.Mesh(this.geometry, this.material);
             this.mesh.frustumCulled = false;
             this.mesh.matrixAutoUpdate = false;
             this.update();
@@ -60,7 +59,7 @@ export var Game;
     Game.Sprite = Sprite;
     ;
     function MySpriteMaterial(parameters, uniforms) {
-        let material = new MeshPhongMaterial(parameters);
+        let material = new THREE.MeshPhongMaterial(parameters);
         material.name = "MeshPhongSpriteMat";
         material.customProgramCacheKey = function () {
             let str = '';

@@ -1,9 +1,8 @@
-import City from "./city";
-import Core from "./core";
-import Hooks from "./hooks";
-import Objects from "./objects";
-import View from "./view";
-
+import City from "./city.js";
+import Core from "./core.js";
+import Hooks from "./hooks.js";
+import Objects from "./objects.js";
+import View from "./view.js";
 
 export namespace GTA {
 

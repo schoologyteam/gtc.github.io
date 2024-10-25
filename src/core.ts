@@ -1,9 +1,7 @@
-import { Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Color, Group } from "three";
-
-import aabb2 from "./aabb2";
-import pts from "./pts";
-import GTA from "./gta";
-import Renderer from "./renderer";
+import aabb2 from "./aabb2.js";
+import pts from "./pts.js";
+import GTA from "./gta.js";
+import Renderer from "./renderer.js";
 
 export namespace Counts {
 	export type Count = [active: number, total: number];
@@ -88,7 +86,7 @@ namespace Core {
 
 	export class Sector extends Toggle {
 		static hooks?: SectorHooks | undefined;
-		group: Group;
+		group
 		//readonly span = 2000;
 		readonly big: SectorUnits;
 		private readonly objs: Obj[] = [];
@@ -100,7 +98,7 @@ namespace Core {
 		) {
 			super();
 			this.big = [x, y];
-			this.group = new Group;
+			this.group = new THREE.Group;
 			Counts.Sectors[1]++;
 			Sector.hooks?.onCreate(this);
 		}
@@ -212,7 +210,7 @@ namespace Core {
 		sector: Sector | null;
 		stuffs: ObjStuffs;
 		rz = 0;
-		constructor(stuffs: ObjStuffs | undefined) {
+		constructor(stuffs: ObjStuffs | undefined = undefined) {
 			super();
 			Counts.Objs[1]++;
 		}
@@ -252,7 +250,7 @@ namespace Core {
 			this.aabb = new aabb2(pts.inv(div), div);
 			this.aabb.translate(this.rpos);
 		}
-		moused(mouse: Vec2) {
+		moused(mouse: vec2) {
 			if (this.aabb?.test(new aabb2(mouse, mouse)))
 				return true;
 		}
@@ -300,13 +298,13 @@ export namespace Util {
 	export function SectorShow(sector: Core.Sector) {
 		let breadth = Core.Galaxy.Unit * Core.Galaxy.SectorSpan;
 		let any = sector as any;
-		any.geometry = new PlaneBufferGeometry(breadth, breadth, 2, 2);
-		any.material = new MeshBasicMaterial({
+		any.geometry = new THREE.PlaneGeometry(breadth, breadth, 2, 2);
+		any.material = new THREE.MeshBasicMaterial({
 			wireframe: true,
 			transparent: true,
 			color: 'red'
 		});
-		any.mesh = new Mesh(any.geometry, any.material);
+		any.mesh = new THREE.Mesh(any.geometry, any.material);
 		any.mesh.position.fromArray([sector.x * breadth + breadth / 2, sector.y * breadth + breadth / 2, 0]);
 		any.mesh.updateMatrix();
 		any.mesh.frustumCulled = false;

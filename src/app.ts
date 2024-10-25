@@ -1,6 +1,6 @@
-import { GTA } from "./gta"
+import { GTA } from "./gta.js"
 
-import Renderer from "./renderer"
+import Renderer from "./renderer.js"
 
 namespace App {
 	export enum KEY {
@@ -12,7 +12,7 @@ namespace App {
 	};
 	var keys = {};
 	var buttons = {};
-	var pos: Vec2 = [0, 0];
+	var pos: vec2 = [0, 0];
 	export var salt = 'x';
 	export var wheel = 0;
 	export function onkeys(event) {
@@ -31,7 +31,7 @@ namespace App {
 		return buttons[b];
 	}
 	export function mouse() {
-		return <Vec2>[...pos];
+		return <vec2>[...pos];
 	}
 	export function boot(version: string) {
 		salt = version;

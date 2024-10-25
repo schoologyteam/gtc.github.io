@@ -1,5 +1,5 @@
-import { GTA } from "./gta";
-import Renderer from "./renderer";
+import { GTA } from "./gta.js";
+import Renderer from "./renderer.js";
 var App;
 (function (App) {
     let KEY;

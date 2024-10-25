@@ -1,10 +1,6 @@
-import { default as THREE, OrthographicCamera, PerspectiveCamera, Clock, Scene, WebGLRenderer, Texture, TextureLoader, WebGLRenderTarget, ShaderMaterial, Mesh, PlaneBufferGeometry, Color, NearestFilter, RGBAFormat, Group, Renderer, AmbientLight, DirectionalLight } from 'three';
-
-import App from './app';
-import GTA from './gta';
-import View from './view';
-
-export { THREE };
+import App from './app.js';
+import GTA from './gta.js';
+import View from './view.js';
 
 const fragmentBackdrop = `
 varying vec2 vUv;
@@ -40,21 +36,21 @@ namespace Renderer {
 	export var ndpi = 1;
 	export var delta = 0;
 
-	export var clock: Clock
-	export var scene: Scene
-	export var scenert: Scene
-	export var camera: PerspectiveCamera
-	export var camera2: OrthographicCamera
-	export var target: WebGLRenderTarget
-	export var renderer: WebGLRenderer
+	export var clock
+	export var scene
+	export var scenert
+	export var camera
+	export var camera2
+	export var target
+	export var renderer
 
-	export var ambientLight: AmbientLight
-	export var directionalLight: DirectionalLight
+	export var ambientLight
+	export var directionalLight
 
-	export var materialBg: ShaderMaterial
-	export var materialPost: ShaderMaterial
+	export var materialBg
+	export var materialPost
 
-	export var quadPost: Mesh
+	export var quadPost
 
 	//export var ambientLight: AmbientLight
 	//export var directionalLight: DirectionalLight
@@ -107,16 +103,16 @@ namespace Renderer {
 
 		console.log('renderer init');
 
-		clock = new Clock();
+		clock = new THREE.Clock();
 
-		scene = new Scene();
-		scene.background = new Color('#292929');
+		scene = new THREE.Scene();
+		scene.background = new THREE.Color('#292929');
 
-		scenert = new Scene();
+		scenert = new THREE.Scene();
 
-		ambientLight = new AmbientLight(0x3a454f);
+		ambientLight = new THREE.AmbientLight(0x3a454f);
 
-		directionalLight = new DirectionalLight(0x355886, 1.0);
+		directionalLight = new THREE.DirectionalLight(0x355886, 1.0);
 		directionalLight.position.set(0, 0, 1);
 
 		scene.add(directionalLight);
@@ -126,7 +122,7 @@ namespace Renderer {
 		if (DPI_UPSCALED_RT)
 			ndpi = window.devicePixelRatio;
 
-		target = new WebGLRenderTarget(
+		target = new THREE.WebGLRenderTarget(
 			window.innerWidth, window.innerHeight,
 			{
 				minFilter: THREE.NearestFilter,
@@ -134,7 +130,7 @@ namespace Renderer {
 				format: THREE.RGBFormat
 			});
 
-		renderer = new WebGLRenderer({ antialias: false });
+		renderer = new THREE.WebGLRenderer({ antialias: false });
 		renderer.setPixelRatio(ndpi);
 		renderer.setSize(100, 100);
 		renderer.autoClear = true;
@@ -144,7 +140,7 @@ namespace Renderer {
 
 		window.addEventListener('resize', onWindowResize, false);
 
-		materialPost = new ShaderMaterial({
+		materialPost = new THREE.ShaderMaterial({
 			uniforms: { tDiffuse: { value: target.texture } },
 			vertexShader: vertexScreen,
 			fragmentShader: fragmentPost,
@@ -153,7 +149,7 @@ namespace Renderer {
 
 		onWindowResize();
 
-		quadPost = new Mesh(plane, materialPost);
+		quadPost = new THREE.Mesh(plane, materialPost);
 		//quadPost.position.z = -100;
 
 		scenert.add(quadPost);
@@ -178,7 +174,7 @@ namespace Renderer {
 		}
 		console.log(`window inner [${w}, ${h}], new is [${w2}, ${h2}]`);
 		target.setSize(w2, h2);
-		plane = new PlaneBufferGeometry(w2, h2);
+		plane = new THREE.PlaneGeometry(w2, h2);
 		if (quadPost)
 			quadPost.geometry = plane;
 		/*camera = new PerspectiveCamera(
@@ -195,10 +191,10 @@ namespace Renderer {
 
 	let mem = [];
 	
-	export function load_texture(file: string, key?: string): Texture {
+	export function load_texture(file: string, key?: string) {
 		if (mem[key || file])
 			return mem[key || file];
-		let texture = new TextureLoader().load(file + `?v=${App.salt}`, () => {
+		let texture = new THREE.TextureLoader().load(file + `?v=${App.salt}`, () => {
 			//renderer.initTexture(texture);
 		});
 		texture.generateMipmaps = false;
@@ -213,22 +209,22 @@ namespace Renderer {
 
 	export function make_render_target(w, h) {
 		const o = {
-			minFilter: NearestFilter,
-			magFilter: NearestFilter,
-			format: RGBAFormat
+			minFilter: THREE.NearestFilter,
+			magFilter: THREE.NearestFilter,
+			format: THREE.RGBAFormat
 		};
-		let target = new WebGLRenderTarget(w, h, o);
+		let target = new THREE.WebGLRenderTarget(w, h, o);
 		return target;
 	}
 
 	export function ortographic_camera(w, h) {
-		let camera = new OrthographicCamera(w / - 2, w / 2, h / 2, h / - 2, - 100, 100);
+		let camera = new THREE.OrthographicCamera(w / - 2, w / 2, h / 2, h / - 2, - 100, 100);
 		camera.updateProjectionMatrix();
 
 		return camera;
 	}
 
-	export function erase_children(group: Group) {
+	export function erase_children(group) {
 		while (group.children.length > 0)
 			group.remove(group.children[0]);
 	}

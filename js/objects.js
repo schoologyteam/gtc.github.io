@@ -1,16 +1,16 @@
-import App from "./app";
-import pts from "./pts";
-import Core from "./core";
-import Renderer from "./renderer";
-import Game from "./game";
-import GTA from "./gta";
-import City from "./city";
+import App from "./app.js";
+import pts from "./pts.js";
+import Core from "./core.js";
+import Renderer from "./renderer.js";
+import Game from "./game.js";
+import GTA from "./gta.js";
+import City from "./city.js";
 var Objects;
 (function (Objects) {
     const ped_uv = [0.125, 0.043478260869565216];
     class Ped extends Core.Obj {
         constructor() {
-            super();
+            super(undefined);
             this.remap = -1;
             this.timer = 0;
             this.row = 0;

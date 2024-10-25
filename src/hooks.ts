@@ -1,6 +1,6 @@
-import Core from "./core";
-import View from "./view";
-import Objects from "./objects";
+import Core from "./core.js";
+import View from "./view.js";
+import Objects from "./objects.js";
 
 // high level game happenings
 
