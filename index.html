@@ -12,19 +12,31 @@
 
 	<link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
 
-	<script src="http://threejs.org/build/three.min.js"></script>
-	
-	<script src="gtasmr.js?v=01x"></script>
+	<script src="fake.js"></script>
 
 	<title>GTASMR</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
+	<script type="importmap">
+		{
+			"imports": {
+				"three": "https://unpkg.com/three@0.167.0/build/three.module.js",
+				"three/addons/": "https://unpkg.com/three@0.167.0/examples/jsm/"
+			}
+		}
+	</script>
+
+	<script type="module">
+		import { default as app } from "./js/app.js";
+
+		window.app = app;
+	</script>
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function (event) {
-			App.boot('01x');
-			//the event occurred
-		})
+			app.boot('');
+		});
 	</script>
 
 	<style>
@@ -38,7 +50,7 @@
 			position: absolute;
 			image-rendering: pixelated;
 		}
-		
+
 		#pane {
 			position: absolute;
 			z-index: 1;
@@ -67,7 +79,7 @@
 
 </head>
 
-<body oncontextmenu="return false;">    
+<body oncontextmenu="return false;">
 	<div id="pane"></div>
 	<div class="stats">loading... :)</div>
 </body>

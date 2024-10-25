@@ -212,7 +212,7 @@ namespace Core {
 		sector: Sector | null;
 		stuffs: ObjStuffs;
 		rz = 0;
-		constructor(stuffs: ObjStuffs | undefned) {
+		constructor(stuffs: ObjStuffs | undefined) {
 			super();
 			Counts.Objs[1]++;
 		}

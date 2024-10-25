@@ -6,6 +6,11 @@ import Objects from "./objects";
 import GTA from "./gta";
 // the view manages everthng dont ask
 export class View {
+    static make() {
+        return new View;
+    }
+    chart(big) {
+    }
     constructor() {
         this.zoom = 0.25;
         this.rpos = [0, 0];
@@ -14,11 +19,6 @@ export class View {
         this.mpos = [0, 0];
         this.mrpos = [0, 0];
         this.galaxy = new Core.Galaxy(10);
-    }
-    static make() {
-        return new View;
-    }
-    chart(big) {
     }
     add(obj) {
         let sector = this.galaxy.atwpos(obj.wpos);

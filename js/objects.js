@@ -66,14 +66,14 @@ var Objects;
     }
     Objects.Ped = Ped;
     class Ply extends Ped {
-        constructor() {
-            super();
-            this.stopped = false;
-        }
         static instance() {
             let ply = new Ply;
             ply.make();
             return ply;
+        }
+        constructor() {
+            super();
+            this.stopped = false;
         }
         make() {
             // 9, 52

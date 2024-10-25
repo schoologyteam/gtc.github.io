@@ -78,6 +78,7 @@ var Core;
     Core.Galaxy = Galaxy;
     ;
     class Sector extends Toggle {
+        objs_() { return this.objs; }
         constructor(x, y, galaxy) {
             var _a;
             super();
@@ -90,7 +91,6 @@ var Core;
             Counts.Sectors[1]++;
             (_a = Sector.hooks) === null || _a === void 0 ? void 0 : _a.onCreate(this);
         }
-        objs_() { return this.objs; }
         add(obj) {
             let i = this.objs.indexOf(obj);
             if (i == -1) {
@@ -190,8 +190,9 @@ var Core;
         }
     }
     Core.Grid = Grid;
+    ;
     class Obj extends Toggle {
-        constructor() {
+        constructor(stuffs) {
             super();
             this.wpos = [0, 0];
             this.rpos = [0, 0];
