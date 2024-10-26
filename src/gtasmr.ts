@@ -1,13 +1,15 @@
-import City from "./city.js";
-import Core from "./core.js";
-import Hooks from "./hooks.js";
-import Objects from "./objects.js";
-import View from "./view.js";
+import city from "./city.js";
+import lod from "./lod.js";
+import ghooks from "./ghooks.js";
+import objects from "./objects.js";
+import renderer from "./renderer.js";
+import view from "./view.js";
+import player from "./objs/player.js";
 
-export namespace GTA {
+export namespace gtasmr {
 
-	export var view: View;
-	export var ply: Objects.Ply;
+	export var gview: view;
+	export var ply: player;
 
 	export var NO_VAR = false;
 	export var SOME_OTHER_SETTING = false;
@@ -41,12 +43,12 @@ export namespace GTA {
 		for (; i < RESOURCES.COUNT; i++)
 			if (resources_loaded & 0b1 << i) count++;
 		if (count == RESOURCES.COUNT)
-			start();
+			init();
 	}
 	export function reasonable_waiter() {
 		if (time + MAX_WAIT < new Date().getTime()) {
 			console.warn(`passed reasonable wait time for resources`);
-			start();
+			init();
 		}
 	}
 	export function critical(mask: string) {
@@ -59,33 +61,33 @@ export namespace GTA {
 		resourced('RC_UNDEFINED');
 		resourced('POPULAR_ASSETS');
 		resourced('READY');
-		window['GTA'] = GTA;
+		window['GTA'] = gtasmr;
 	}
-	function start() {
+	export async function start() {
 		if (started)
 			return;
-		console.log(' gtasmr starting ');
-		view = View.make();
-		ply = Objects.Ply.instance();
-		view.add(ply);
-		City.load_sounds();
-		City.creation();
-		Hooks.start();
+		console.log(' gtasmr start ');
+		gview = view.make();
+		ply = player.instance();
+		gview.add(ply);
+		city.load_sounds();
+		city.creation();
+		ghooks.start();
 		if (window.location.href.indexOf("#novar") != -1)
 			NO_VAR = false;
 		started = true;
 	}
 
-	export function tick() {
+	export function step(delta) {
 		if (!started) {
 			reasonable_waiter();
 			return;
 		}
-		view.tick();
-		//Board.update();
-		//Ploppables.update();
+		gview.tick();
+		renderer.update();
+		renderer.render();
 	}
 
 }
 
-export default GTA;
+export default gtasmr;

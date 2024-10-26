@@ -1,13 +1,14 @@
-import Core from "./core.js";
-import Game from "./game.js";
-import pts from "./pts.js";
-import aabb2 from "./aabb2.js";
-import GTA from "./gta.js";
-export var City;
-(function (City) {
-    City.sounds = { footsteps: [] };
-    let Generator;
-    (function (Generator) {
+import pts from "./dep/pts.js";
+import lod from "./lod.js";
+import objects from "./objects.js";
+import game from "./game.js";
+import aabb2 from "./dep/aabb2.js";
+import gtasmr from "./gtasmr.js";
+export var city;
+(function (city) {
+    city.sounds = { footsteps: [] };
+    let generator;
+    (function (generator) {
         function run(min, max, func) {
             let x = min[0];
             for (; x <= max[0]; x++) {
@@ -17,67 +18,67 @@ export var City;
                 }
             }
         }
-        Generator.run = run;
-    })(Generator || (Generator = {}));
+        generator.run = run;
+    })(generator || (generator = {}));
     const pavement_uv = 0.25;
     const road_uv = 0.2;
-    const road_typical = { sty: 'grey_roads.png', repeat: [road_uv, road_uv] };
-    const pavement_typical = { sty: 'floors/green/645.bmp', /*repeat: [pavement_uv, pavement_uv]*/ };
-    const pavement_blue = { sty: 'floors/blue/256.bmp' };
-    const pavement_mixed = { sty: 'floors/mixed/64.bmp' };
-    const block_tenement = { sty: 'commercial/storefront/578.bmp' };
+    const road_typical = { sty: 'sty/sheets/grey_roads.png', repeat: [road_uv, road_uv] };
+    const pavement_typical = { sty: 'sty/floors/green/645.bmp', /*repeat: [pavement_uv, pavement_uv]*/ };
+    const pavement_blue = { sty: 'sty/floors/blue/256.bmp' };
+    const pavement_mixed = { sty: 'sty/floors/mixed/64.bmp' };
+    const block_tenement = { sty: 'sty/commercial/storefront/578.bmp' };
     const make_room = (pos) => {
-        let obj = new Core.Obj;
+        let obj = new lod.obj;
         let properties = Object.assign(Object.assign({}, block_tenement), { bind: obj });
-        properties.mask = 'walls/casual/concaveMask.bmp';
+        properties.mask = 'sty/walls/casual/concaveMask.bmp';
         // properties.offset = [pavement_uv * 1, 0];
-        new Game.Sprite(properties);
+        new game.sprite(properties);
         obj.wpos = pts.add(pos, [0.5, 0.5]);
         //obj.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-        obj.update();
-        GTA.view.add(obj);
+        obj._step();
+        //GTA.view.add(obj);
     };
     function creation() {
         pts.area_every(new aabb2([-100, 0], [+100, 1]), (pos) => {
-            let obj = new Core.Obj;
-            let properties = Object.assign(Object.assign({}, road_typical), { bind: obj });
-            new Game.Sprite(properties);
-            obj.wpos = pts.add(pos, [0.5, 0.5]);
+            let floor = new objects.floor;
+            floor.sty;
+            floor.wpos = pts.add(pos, [0.5, 0.5]);
             if (pos[1] == 0)
-                obj.rz = Math.PI;
-            obj.update();
-            GTA.view.add(obj);
+                floor.rz = Math.PI;
+            floor._step();
+            gtasmr.gview.add(floor);
+            console.log('add road');
         });
         const pavement = (pos) => {
-            let obj = new Core.Obj;
-            let properties = Object.assign(Object.assign({}, pavement_mixed), { bind: obj });
-            // properties.offset = [pavement_uv * 1, 0];
-            new Game.Sprite(properties);
+            let obj = new lod.obj;
+            let props = Object.assign(Object.assign({}, pavement_mixed), { bind: obj });
+            props.offset = [pavement_uv * 1, 0];
+            new game.sprite(props);
             obj.wpos = pts.add(pos, [0.5, 0.5]);
-            obj.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-            obj.update();
-            GTA.view.add(obj);
+            //obj.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
+            obj._step();
+            gtasmr.gview.add(obj);
         };
         const tenement = (pos) => {
-            let obj = new Core.Obj();
+            let obj = new lod.obj();
             let properties = Object.assign(Object.assign({}, block_tenement), { bind: obj });
-            properties.mask = 'interiors/casual/concaveMask.bmp';
-            new Game.Sprite(properties);
-            obj.update();
-            GTA.view.add(obj);
+            properties.mask = 'sty/interiors/casual/concaveMask.bmp';
+            new game.sprite(properties);
+            obj._step();
+            gtasmr.gview.add(obj);
         };
         pts.area_every(new aabb2([-100, -1], [+100, -1]), pavement);
         pts.area_every(new aabb2([-100, 2], [+100, 2]), pavement);
         pts.area_every(new aabb2([0, -2], [0 - 3, -2 - 1]), make_room);
         //pts.area_every(new aabb2([-10, 3], [+10, 3]), tenement);
     }
-    City.creation = creation;
+    city.creation = creation;
     function load_sounds() {
         for (let i = 0; i < 4; i++) {
-            City.sounds.footsteps[i] = new Audio(`sfx/FOOTSTEP/SFX_FOOTSEP_CONCRETE_${i + 1}.wav`);
-            City.sounds.footsteps[i].volume = 0.1;
+            city.sounds.footsteps[i] = new Audio(`snd/SFX_FOOTSTEP_CONCRETE_${i + 1}.wav`);
+            city.sounds.footsteps[i].volume = 0.1;
         }
     }
-    City.load_sounds = load_sounds;
-})(City || (City = {}));
-export default City;
+    city.load_sounds = load_sounds;
+})(city || (city = {}));
+export default city;

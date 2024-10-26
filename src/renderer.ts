@@ -1,6 +1,6 @@
-import App from './app.js';
-import GTA from './gta.js';
-import View from './view.js';
+import app from './app.js';
+import gtasmr from './gtasmr.js';
+import view from './view.js';
 
 const fragmentBackdrop = `
 varying vec2 vUv;
@@ -15,7 +15,7 @@ varying vec2 vUv;
 uniform sampler2D tDiffuse;
 void main() {
 	vec4 clr = texture2D( tDiffuse, vUv );
-	clr.rgb = mix(clr.rgb, vec3(0.5), 0.0);
+	clr.rgb = mix(clr.rgb, vec3(0.5), 0.1);
 	gl_FragColor = clr;
 }`
 
@@ -29,7 +29,7 @@ void main() {
 
 // three quarter
 
-namespace Renderer {
+namespace renderer {
 
 	export const DPI_UPSCALED_RT = true;
 
@@ -68,7 +68,7 @@ namespace Renderer {
 	var reset = 0;
 	var frames = 0;
 
-	export var fps;
+	export var fps = 0;
 	export var memory;
 
 	// https://github.com/mrdoob/stats.js/blob/master/src/Stats.js#L71
@@ -110,13 +110,13 @@ namespace Renderer {
 
 		scenert = new THREE.Scene();
 
-		ambientLight = new THREE.AmbientLight(0x3a454f);
+		// ambientLight = new THREE.AmbientLight(0x3a454f);
+		ambientLight = new THREE.AmbientLight('white');
 
 		directionalLight = new THREE.DirectionalLight(0x355886, 1.0);
 		directionalLight.position.set(0, 0, 1);
 
-		scene.add(directionalLight);
-		scene.add(directionalLight.target);
+		//scene.add(directionalLight); 
 		scene.add(ambientLight);
 
 		if (DPI_UPSCALED_RT)
@@ -154,7 +154,7 @@ namespace Renderer {
 
 		scenert.add(quadPost);
 
-		(window as any).Renderer = Renderer;
+		(window as any).Renderer = renderer;
 	}
 
 	export var w, h, w2, h2;
@@ -194,7 +194,7 @@ namespace Renderer {
 	export function load_texture(file: string, key?: string) {
 		if (mem[key || file])
 			return mem[key || file];
-		let texture = new THREE.TextureLoader().load(file + `?v=${App.salt}`, () => {
+		let texture = new THREE.TextureLoader().load(file + `?v=${app.salt}`, () => {
 			//renderer.initTexture(texture);
 		});
 		texture.generateMipmaps = false;
@@ -230,4 +230,4 @@ namespace Renderer {
 	}
 }
 
-export default Renderer;
+export default renderer;

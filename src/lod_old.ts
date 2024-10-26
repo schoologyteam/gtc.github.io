@@ -1,7 +1,8 @@
-import aabb2 from "./aabb2.js";
-import pts from "./pts.js";
-import GTA from "./gta.js";
-import Renderer from "./renderer.js";
+import aabb2 from "./dep/aabb2.js";
+import pts from "./dep/pts.js";
+
+import gtasmr from "./gtasmr.js";
+import renderer from "./renderer.js";
 
 export namespace Counts {
 	export type Count = [active: number, total: number];
@@ -12,7 +13,7 @@ export namespace Counts {
 	export var Blocks: Count = [0, 0];
 };
 
-class Toggle {
+class toggle {
 	protected active = false;
 	isActive() { return this.active };
 	on() {
@@ -35,48 +36,48 @@ class Toggle {
 	}
 }
 
-namespace Core {
-	type Units = vec2;
-	type SectorUnits = vec2;
-	type Pixels = vec2;
+namespace lod_old {
+	type units = vec2;
+	type sectorUnits = vec2;
+	type pixels = vec2;
 
-	export class Galaxy {
+	export class world {
 		static readonly Unit = 64;
 		static readonly SectorSpan = 2;
-		arrays: Sector[][] = [];
-		readonly grid: Grid;
+		arrays: chunk[][] = [];
+		readonly grid: grid;
 		constructor(span) {
-			this.grid = new Grid(3, 4, this);
+			this.grid = new grid(3, 4, this);
 		}
-		update(wpos: Units) {
-			this.grid.big = Galaxy.big(wpos);
+		update(wpos: units) {
+			this.grid.big = world.big(wpos);
 			this.grid.offs();
 			this.grid.crawl();
 		}
-		lookup(x, y): Sector | undefined {
+		lookup(x, y): chunk | undefined {
 			if (this.arrays[y] == undefined)
 				this.arrays[y] = [];
 			return this.arrays[y][x];
 		}
-		at(x, y): Sector {
+		at(x, y): chunk {
 			return this.lookup(x, y) || this.make(x, y);
 		}
-		atwpos(wpos: Units): Sector {
-			let big = Galaxy.big(wpos);
+		atwpos(wpos: units): chunk {
+			let big = world.big(wpos);
 			return this.at(big[0], big[1]);
 		}
-		protected make(x, y): Sector {
+		protected make(x, y): chunk {
 			let s = this.lookup(x, y);
 			if (s)
 				return s;
-			s = this.arrays[y][x] = new Sector(x, y, this);
+			s = this.arrays[y][x] = new chunk(x, y, this);
 			return s;
 		}
-		static big(wpos: Units): SectorUnits {
-			return pts.floor(pts.divide(wpos, Galaxy.SectorSpan));
+		static big(wpos: units): sectorUnits {
+			return pts.floor(pts.divide(wpos, world.SectorSpan));
 		}
-		static unproject(rpos: Pixels): Units {
-			return pts.divide(rpos, Core.Galaxy.Unit);
+		static unproject(rpos: pixels): units {
+			return pts.divide(rpos, lod_old.world.Unit);
 		}
 	}
 	interface SectorHooks {
@@ -84,23 +85,23 @@ namespace Core {
 		onTick: (Sector) => any;
 	};
 
-	export class Sector extends Toggle {
+	export class chunk extends toggle {
 		static hooks?: SectorHooks | undefined;
 		group
 		//readonly span = 2000;
-		readonly big: SectorUnits;
+		readonly big: sectorUnits;
 		private readonly objs: Obj[] = [];
 		objs_(): ReadonlyArray<Obj> { return this.objs; }
 		constructor(
 			public readonly x,
 			public readonly y,
-			readonly galaxy: Galaxy
+			readonly galaxy: world
 		) {
 			super();
 			this.big = [x, y];
 			this.group = new THREE.Group;
 			Counts.Sectors[1]++;
-			Sector.hooks?.onCreate(this);
+			chunk.hooks?.onCreate(this);
 		}
 		add(obj: Obj) {
 			let i = this.objs.indexOf(obj);
@@ -130,7 +131,7 @@ namespace Core {
 			}
 		}
 		tick() {
-			Sector.hooks?.onTick(this);
+			chunk.hooks?.onTick(this);
 			//for (let obj of this.objs)
 			//	obj.tick();
 		}
@@ -142,7 +143,7 @@ namespace Core {
 			//console.log(' sector show ');
 			for (let obj of this.objs)
 				obj.show();
-			Renderer.scene.add(this.group);
+			renderer.scene.add(this.group);
 		}
 		hide() {
 			if (this.off())
@@ -152,19 +153,19 @@ namespace Core {
 			//console.log(' sector hide ');
 			for (let obj of this.objs)
 				obj.hide();
-			Renderer.scene.remove(this.group);
+			renderer.scene.remove(this.group);
 		}
 	}
-	export class Grid {
+	export class grid {
 		big: vec2 = [0, 0];
-		public shown: Sector[] = [];
+		public shown: chunk[] = [];
 		constructor(
 			public readonly spread,
 			public readonly outside,
-			readonly galaxy: Galaxy
+			readonly galaxy: world
 		) {
 		}
-		visible(sector: Sector) {
+		visible(sector: chunk) {
 			return pts.dist(sector.big, this.big) < this.spread;
 		}
 		crawl() {
@@ -186,7 +187,7 @@ namespace Core {
 			let allObjs: Obj[] = [];
 			let i = this.shown.length;
 			while (i--) {
-				let sector: Sector;
+				let sector: chunk;
 				sector = this.shown[i];
 				allObjs = allObjs.concat(sector.objs_());
 				sector.tick();
@@ -202,12 +203,12 @@ namespace Core {
 	interface ObjStuffs {
 
 	};
-	export class Obj extends Toggle {
-		wpos: Units = [0, 0];
-		rpos: Pixels = [0, 0];
+	export class Obj extends toggle {
+		wpos: units = [0, 0];
+		rpos: pixels = [0, 0];
 		size: vec2 = [64, 64];
 		shape: Shape | null;
-		sector: Sector | null;
+		sector: chunk | null;
 		stuffs: ObjStuffs;
 		rz = 0;
 		constructor(stuffs: ObjStuffs | undefined = undefined) {
@@ -232,7 +233,7 @@ namespace Core {
 			this.shape?.hide();
 		}
 		wtorpos() {
-			this.rpos = pts.mult(this.wpos, Galaxy.Unit);
+			this.rpos = pts.mult(this.wpos, world.Unit);
 		}
 		tick() { // implement me
 		}
@@ -260,7 +261,7 @@ namespace Core {
 		export type Parameters = Shape['properties'];
 	};
 
-	export class Shape extends Toggle {
+	export class Shape extends toggle {
 		constructor(
 			public readonly properties: { bind: Obj },
 			public readonly counts
@@ -295,8 +296,8 @@ namespace Core {
 }
 
 export namespace Util {
-	export function SectorShow(sector: Core.Sector) {
-		let breadth = Core.Galaxy.Unit * Core.Galaxy.SectorSpan;
+	export function SectorShow(sector: lod_old.chunk) {
+		let breadth = lod_old.world.Unit * lod_old.world.SectorSpan;
 		let any = sector as any;
 		any.geometry = new THREE.PlaneGeometry(breadth, breadth, 2, 2);
 		any.material = new THREE.MeshBasicMaterial({
@@ -311,9 +312,9 @@ export namespace Util {
 		any.mesh.matrixAutoUpdate = false;
 		//Renderer.scene.add(any.mesh);
 	}
-	export function SectorHide(sector: Core.Sector) {
+	export function SectorHide(sector: lod_old.chunk) {
 		let any = sector as any;
-		Renderer.scene.remove(any.mesh);
+		renderer.scene.remove(any.mesh);
 	}
 }
-export default Core;
+export default lod_old;

@@ -1,95 +1,95 @@
-import App from "./app.js";
-import pts from "./pts.js";
-import Renderer from "./renderer.js";
-import Core, { Counts } from "./core.js";
-import Objects from "./objects.js";
-import GTA from "./gta.js";
+import app from "./app.js";
+import pts from "./dep/pts.js";
+import renderer from "./renderer.js";
+import lod, { numbers } from "./lod.js";
+import gtasmr from "./gtasmr.js";
+import ped from "./objs/ped.js";
 // the view manages everthng dont ask
-export class View {
+const zeroes = [0, 0];
+export class view {
     static make() {
-        return new View;
+        return new view;
     }
     chart(big) {
     }
     constructor() {
         this.zoom = 0.25;
-        this.rpos = [0, 0];
-        this.pos = [0, 0];
-        this.wpos = [0, 0];
-        this.mpos = [0, 0];
-        this.mrpos = [0, 0];
-        this.galaxy = new Core.Galaxy(10);
+        this.rpos = zeroes;
+        this.pos = zeroes;
+        this.wpos = zeroes;
+        this.mpos = zeroes;
+        this.mrpos = zeroes;
+        new lod.world(10);
     }
     add(obj) {
-        let sector = this.galaxy.atwpos(obj.wpos);
+        let sector = lod.gworld.atwpos(obj.wpos);
         sector.add(obj);
     }
     remove(obj) {
         var _a;
-        (_a = obj.sector) === null || _a === void 0 ? void 0 : _a.remove(obj);
+        (_a = obj.chunk) === null || _a === void 0 ? void 0 : _a.remove(obj);
     }
     tick() {
         this.move();
         this.chase();
         this.mouse();
         this.stats();
-        let wpos = Core.Galaxy.unproject(this.rpos);
-        this.galaxy.update(wpos);
+        let wpos = lod.unproject(this.rpos);
+        lod.gworld.update(wpos);
     }
     mouse() {
-        let mouse = App.mouse();
-        mouse = pts.subtract(mouse, pts.divide([Renderer.w, Renderer.h], 2));
-        mouse = pts.mult(mouse, Renderer.ndpi);
+        let mouse = app.mpos();
+        mouse = pts.subtract(mouse, pts.divide([renderer.w, renderer.h], 2));
+        mouse = pts.mult(mouse, renderer.ndpi);
         mouse = pts.mult(mouse, this.zoom);
         mouse[1] = -mouse[1];
         this.mpos = pts.clone(mouse);
         this.mrpos = pts.add(this.rpos, mouse);
         // now..
-        if (App.button(2) >= 1) {
-            let ping = new Objects.Ped;
-            ping.wpos = Core.Galaxy.unproject(this.mrpos);
-            ping.make();
+        if (app.button(2) >= 1) {
+            let ping = new ped;
+            ping.wpos = lod.unproject(this.mrpos);
             this.add(ping);
         }
     }
     move() {
         let pan = 5;
-        if (App.key('x'))
+        if (app.key('x'))
             pan *= 10;
-        if (App.key('w'))
+        if (app.key('w'))
             this.rpos[1] += pan;
-        if (App.key('s'))
+        if (app.key('s'))
             this.rpos[1] -= pan;
-        if (App.key('a'))
+        if (app.key('a'))
             this.rpos[0] -= pan;
-        if (App.key('d'))
+        if (app.key('d'))
             this.rpos[0] += pan;
-        if (App.key('r'))
+        if (app.key('r'))
             this.zoom += 0.01;
-        if (App.key('f'))
+        if (app.key('f'))
             this.zoom -= 0.01;
         this.zoom = this.zoom > 1 ? 1 : this.zoom < 0.1 ? 0.1 : this.zoom;
-        this.pos = Core.Galaxy.unproject(this.rpos);
-        Renderer.camera.scale.fromArray([this.zoom, this.zoom, this.zoom]);
+        this.pos = lod.unproject(this.rpos);
+        renderer.camera.scale.fromArray([this.zoom, this.zoom, this.zoom]);
     }
     chase() {
-        const time = Renderer.delta;
+        const time = renderer.delta;
         pts.mult([0, 0], 0);
-        let ply = GTA.ply.rpos;
+        let ply = gtasmr.ply.rpos;
         this.rpos = pts.add(pts.mult(pts.subtract(ply, this.rpos), time * 5), this.rpos);
         //this.rpos = pts.mult(this.rpos, this.zoom);
         let inv = pts.inv(this.rpos);
-        Renderer.scene.position.set(inv[0], inv[1], 0);
+        renderer.scene.position.set(inv[0], inv[1], 0);
     }
     stats() {
         let crunch = ``;
-        crunch += `DPI_UPSCALED_RT: ${Renderer.DPI_UPSCALED_RT}<br /><br />`;
-        crunch += `dpi: ${Renderer.ndpi}<br />`;
-        crunch += `fps: ${Renderer.fps} / ${Renderer.delta.toPrecision(3)}<br />`;
+        crunch += `DPI_UPSCALED_RT: ${renderer.DPI_UPSCALED_RT}<br /><br />`;
+        crunch += `dpi: ${renderer.ndpi}<br />`;
+        crunch += `fps: ${renderer.fps} / ${renderer.delta.toPrecision(3)}<br />`;
         crunch += '<br />';
-        crunch += `textures: ${Renderer.renderer.info.memory.textures}<br />`;
-        crunch += `programs: ${Renderer.renderer.info.programs.length}<br />`;
-        crunch += `memory: ${Math.floor(Renderer.memory.usedJSHeapSize / 1000000)} / ${Math.floor(Renderer.memory.totalJSHeapSize / 1000000)}<br />`;
+        crunch += `textures: ${renderer.renderer.info.memory.textures}<br />`;
+        crunch += `programs: ${renderer.renderer.info.programs.length}<br />`;
+        //crunch += `memory: ${Math.floor(renderer.memory.usedJSHeapSize / 1000000)} / ${Math.floor(renderer.memory.totalJSHeapSize / 1000000)}<br />`;
         crunch += '<br />';
         //crunch += `mouse: ${pts.to_string(App.mouse())}<br />`;
         crunch += `mpos: ${pts.to_string(pts.floor(this.mpos))}<br />`;
@@ -99,13 +99,13 @@ export class View {
         crunch += `view zoom: ${this.zoom.toPrecision(2)}<br />`;
         crunch += '<br />';
         //crunch += `world wpos: ${pts.to_string(this.pos)}<br /><br />`;
-        crunch += `sectors: ${Counts.Sectors[0]} / ${Counts.Sectors[1]}<br />`;
-        crunch += `game objs: ${Counts.Objs[0]} / ${Counts.Objs[1]}<br />`;
-        crunch += `sprites: ${Counts.Sprites[0]} / ${Counts.Sprites[1]}<br />`;
-        crunch += `blocks: ${Counts.Blocks[0]} / ${Counts.Blocks[1]}<br />`;
+        crunch += `sectors: ${numbers.sectors[0]} / ${numbers.sectors[1]}<br />`;
+        crunch += `game objs: ${numbers.objs[0]} / ${numbers.objs[1]}<br />`;
+        crunch += `sprites: ${numbers.sprites[0]} / ${numbers.sprites[1]}<br />`;
+        crunch += `blocks: ${numbers.blocks[0]} / ${numbers.blocks[1]}<br />`;
         crunch += '<br />';
         crunch += `controls: click to run, R+F to zoom, C to toggle walk, WASD to move camera<br />`;
-        App.sethtml('.stats', crunch);
+        app.set_html('.stats', crunch);
     }
 }
-export default View;
+export default view;

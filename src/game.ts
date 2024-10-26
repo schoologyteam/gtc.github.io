@@ -1,50 +1,63 @@
-import Core, { Counts } from "./core.js";
-import pts from "./pts.js";
-import Renderer from "./renderer.js";
+import lod, { numbers } from "./lod.js";
+import pts from "./dep/pts.js";
+import renderer from "./renderer.js";
 
-export namespace Game {
+export namespace game {
 
-	export namespace Sprite {
-		export type Parameters = Sprite['properties'];
+	export namespace sprite {
+		export type parameters = sprite['props'];
 	};
-	interface SpriteParameters {
-		bind: Core.Obj,
+	interface unnamed {
+		bind: lod.obj,
 		sty: string,
-		mask?: string,
-		blur?: string,
 		offset?: vec2,
 		repeat?: vec2,
+		center?: vec2,
+		mask?: string,
+		blur?: string,
 		z?: number
 	};
 
-	export class Sprite extends Core.Shape {
+	export class sprite {
 		mesh
 		material
 		geometry
-		offset
-		repeat
-		center
 		rotation
-		spriteMatrix
+		matrix
 		constructor(
-			public readonly properties: SpriteParameters
+			public readonly props: unnamed
 		) {
-			super(properties, Counts.Sprites);
-			this.offset = new THREE.Vector2(0, 0);
-			this.repeat = new THREE.Vector2(1, 1);
-			this.center = new THREE.Vector2(0, 1);
+			this.props.offset = this.props.offset || [0, 0] as vec2;
+			this.props.repeat = this.props.repeat || [1, 1] as vec2;
+			this.props.center = this.props.center || [0, 1] as vec2;
+			this.props.z = this.props.z || 0;
 			this.rotation = 0;
-			this.spriteMatrix = new THREE.Matrix3;
+			this.matrix = new THREE.Matrix3;
+			this.douv();
+			this.create();
 		}
-		update() {
+		douv() {
+			// todo
+			this.matrix.setUvTransform(
+				this.props.offset![0],
+				this.props.offset![1],
+				this.props.repeat![0],
+				this.props.repeat![1],
+				this.rotation,
+				this.props.center![0],
+				this.props.center![1]);
+			// this is built-in
+			// this.material.map.matrix.copy(this.matrix);
+			// this.material.map.matrixAutoUpdate = false;
+		}
+		step() {
 			if (!this.mesh)
 				return;
-			this.offset.fromArray(this.properties.offset || [0, 0]);
-			this.repeat.fromArray(this.properties.repeat || [1, 1]);
-			this.spriteMatrix.setUvTransform(this.offset.x, this.offset.y, this.repeat.x, this.repeat.y, this.rotation, this.center.x, this.center.y);
-			this.mesh.rotation.z = this.properties.bind.rz;
-			this.mesh?.position.fromArray([...this.properties.bind.rpos, this.properties.z || 0]);
-			this.mesh?.updateMatrix();
+			this.douv();
+			
+			this.mesh.rotation.z = this.props.bind.rz;
+			this.mesh.position.fromArray([...this.props.bind.rpos, this.props.z!]);
+			this.mesh.updateMatrix();
 		}
 		dispose() {
 			if (!this.mesh)
@@ -54,32 +67,30 @@ export namespace Game {
 			this.mesh.parent?.remove(this.mesh);
 		}
 		create() {
-			let w = this.properties.bind.size[0];
-			let h = this.properties.bind.size[1];
-			this.geometry = new THREE.PlaneGeometry(w, h);
+			let pt = pts.clone(this.props.bind.size);
+			pts.mult(pt, lod.size);
+			this.geometry = new THREE.PlaneGeometry(pt[0], pt[1]);
 			this.material = MySpriteMaterial({
-				map: Renderer.load_texture(`sty/${this.properties.sty}`),
+				map: renderer.load_texture(this.props.sty),
+				// color: 'green',
 				transparent: true,
 				shininess: 0
 			}, {
-				spriteMatrix: this.spriteMatrix,
-				blurMap: (this.properties.blur ? Renderer.load_texture(`sty/${this.properties.blur}`) : null),
-				maskMap: (this.properties.mask ? Renderer.load_texture(`sty/${this.properties.mask}`) : null)
+				matrix: this.matrix,
+				blurMap: (this.props.blur ? renderer.load_texture(this.props.blur) : null),
+				maskMap: (this.props.mask ? renderer.load_texture(this.props.mask) : null)
 			});
 			this.mesh = new THREE.Mesh(this.geometry, this.material);
 			this.mesh.frustumCulled = false;
 			this.mesh.matrixAutoUpdate = false;
-			this.update();
-			//if (this.y.drawable.x.obj.sector)
-			//	this.y.drawable.x.obj.sector.group.add(this.mesh);
-			//else
-			Renderer.scene.add(this.mesh);
+			this.step();
+			renderer.scene.add(this.mesh);
 		}
 	};
 
 	export function MySpriteMaterial(parameters, uniforms: any) {
 		let material = new THREE.MeshPhongMaterial(parameters);
-		material.name = "MeshPhongSpriteMat";
+		material.name = "MeshPhongSpriteMaterial";
 		material.customProgramCacheKey = function() {
 			let str = '';
 			if (uniforms.blurMap)
@@ -99,25 +110,27 @@ export namespace Game {
 				shader.uniforms.maskMap = { value: uniforms.maskMap };
 				shader.defines.HAS_MASK = 1;
 			}
-			shader.uniforms.spriteMatrix = { value: uniforms.spriteMatrix };
+			shader.uniforms.spriteMatrix = { value: uniforms.matrix };
 
 			shader.vertexShader = shader.vertexShader.replace(
 				`#define PHONG`,
 				`#define PHONG
+				varying vec2 fUv;
 				uniform mat3 spriteMatrix;
 			`
 			);
 			shader.vertexShader = shader.vertexShader.replace(
 				`#include <uv_vertex>`,
 				`#include <uv_vertex>
-				#ifdef USE_UV
-				vUv = ( spriteMatrix * vec3( uv, 1 ) ).xy;
+				#ifdef USE_MAP
+					fUv = ( spriteMatrix * vec3( MAP_UV, 1 ) ).xy;
 				#endif
 			`
-			);			
+			);
 			shader.fragmentShader = shader.fragmentShader.replace(
 				`#define PHONG`,
 				`#define PHONG
+				varying vec2 fUv;
 				uniform sampler2D blurMap;
 				uniform sampler2D maskMap;
 			`
@@ -126,21 +139,27 @@ export namespace Game {
 				`#include <map_fragment>`,
 				`
 				#ifdef USE_MAP
-				vec4 texelColor = vec4(0);
-				vec4 mapColor = texture2D( map, vUv );
-				#ifdef HAS_BLUR
-				vec4 blurColor = texture2D( blurMap, vUv );
-				blurColor.rgb *= 0.0;
-				blurColor.a /= 4.0;
-				texelColor = blurColor;
-				#endif
-				texelColor += mapColor;
-				#ifdef HAS_MASK
-				vec4 maskColor = texture2D( maskMap, vUv );
-				texelColor.rgb *= maskColor.r;
-				#endif
-				texelColor = mapTexelToLinear( texelColor );
-				diffuseColor *= texelColor;
+					vec4 texelColor = vec4(0);
+					vec4 mapColor = texture2D( map, fUv );
+					
+					#ifdef HAS_BLUR
+						vec4 blurColor = texture2D( blurMap, fUv );
+						blurColor.rgb *= 0.0;
+						blurColor.a /= 4.0;
+						texelColor = blurColor;
+					#endif
+
+					texelColor += mapColor;
+
+					#ifdef HAS_MASK
+						vec4 maskColor = texture2D( maskMap, fUv );
+						texelColor.rgb *= maskColor.r;
+					#endif
+
+					//texelColor = mapTexelToLinear( texelColor );
+					
+					diffuseColor *= texelColor;
+					
 				#endif
 			`
 			);
@@ -149,4 +168,4 @@ export namespace Game {
 	}
 }
 
-export default Game;
+export default game;

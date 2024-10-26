@@ -9,7 +9,7 @@ export var Counts;
     Counts.Blocks = [0, 0];
 })(Counts || (Counts = {}));
 ;
-class Toggle {
+class toggle {
     constructor() {
         this.active = false;
     }
@@ -34,15 +34,15 @@ class Toggle {
         return false;
     }
 }
-var lod;
-(function (lod) {
-    class Galaxy {
+var lod_old;
+(function (lod_old) {
+    class world {
         constructor(span) {
             this.arrays = [];
-            this.grid = new Grid(3, 4, this);
+            this.grid = new grid(3, 4, this);
         }
         update(wpos) {
-            this.grid.big = Galaxy.big(wpos);
+            this.grid.big = world.big(wpos);
             this.grid.offs();
             this.grid.crawl();
         }
@@ -55,28 +55,28 @@ var lod;
             return this.lookup(x, y) || this.make(x, y);
         }
         atwpos(wpos) {
-            let big = Galaxy.big(wpos);
+            let big = world.big(wpos);
             return this.at(big[0], big[1]);
         }
         make(x, y) {
             let s = this.lookup(x, y);
             if (s)
                 return s;
-            s = this.arrays[y][x] = new Sector(x, y, this);
+            s = this.arrays[y][x] = new chunk(x, y, this);
             return s;
         }
         static big(wpos) {
-            return pts.floor(pts.divide(wpos, Galaxy.SectorSpan));
+            return pts.floor(pts.divide(wpos, world.SectorSpan));
         }
         static unproject(rpos) {
-            return pts.divide(rpos, lod.Galaxy.Unit);
+            return pts.divide(rpos, lod_old.world.Unit);
         }
     }
-    Galaxy.Unit = 64;
-    Galaxy.SectorSpan = 2;
-    lod.Galaxy = Galaxy;
+    world.Unit = 64;
+    world.SectorSpan = 2;
+    lod_old.world = world;
     ;
-    class Sector extends Toggle {
+    class chunk extends toggle {
         objs_() { return this.objs; }
         constructor(x, y, galaxy) {
             var _a;
@@ -88,7 +88,7 @@ var lod;
             this.big = [x, y];
             this.group = new THREE.Group;
             Counts.Sectors[1]++;
-            (_a = Sector.hooks) === null || _a === void 0 ? void 0 : _a.onCreate(this);
+            (_a = chunk.hooks) === null || _a === void 0 ? void 0 : _a.onCreate(this);
         }
         add(obj) {
             let i = this.objs.indexOf(obj);
@@ -120,7 +120,7 @@ var lod;
         }
         tick() {
             var _a;
-            (_a = Sector.hooks) === null || _a === void 0 ? void 0 : _a.onTick(this);
+            (_a = chunk.hooks) === null || _a === void 0 ? void 0 : _a.onTick(this);
             //for (let obj of this.objs)
             //	obj.tick();
         }
@@ -145,8 +145,8 @@ var lod;
             renderer.scene.remove(this.group);
         }
     }
-    lod.Sector = Sector;
-    class Grid {
+    lod_old.chunk = chunk;
+    class grid {
         constructor(spread, outside, galaxy) {
             this.spread = spread;
             this.outside = outside;
@@ -188,9 +188,9 @@ var lod;
                 obj.tick();
         }
     }
-    lod.Grid = Grid;
+    lod_old.grid = grid;
     ;
-    class Obj extends Toggle {
+    class Obj extends toggle {
         constructor(stuffs = undefined) {
             super();
             this.wpos = [0, 0];
@@ -219,7 +219,7 @@ var lod;
             (_a = this.shape) === null || _a === void 0 ? void 0 : _a.hide();
         }
         wtorpos() {
-            this.rpos = pts.mult(this.wpos, Galaxy.Unit);
+            this.rpos = pts.mult(this.wpos, world.Unit);
         }
         tick() {
         }
@@ -243,9 +243,9 @@ var lod;
                 return true;
         }
     }
-    lod.obj = Obj;
+    lod_old.Obj = Obj;
     ;
-    class Shape extends Toggle {
+    class Shape extends toggle {
         constructor(properties, counts) {
             super();
             this.properties = properties;
@@ -276,12 +276,12 @@ var lod;
             this.counts[0]--;
         }
     }
-    lod.Shape = Shape;
-})(lod || (lod = {}));
+    lod_old.Shape = Shape;
+})(lod_old || (lod_old = {}));
 export var Util;
 (function (Util) {
     function SectorShow(sector) {
-        let breadth = lod.Galaxy.Unit * lod.Galaxy.SectorSpan;
+        let breadth = lod_old.world.Unit * lod_old.world.SectorSpan;
         let any = sector;
         any.geometry = new THREE.PlaneGeometry(breadth, breadth, 2, 2);
         any.material = new THREE.MeshBasicMaterial({
@@ -303,4 +303,4 @@ export var Util;
     }
     Util.SectorHide = SectorHide;
 })(Util || (Util = {}));
-export default lod;
+export default lod_old;

@@ -1,16 +1,8 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-import City from "./city.js";
+import city from "./city.js";
 import ghooks from "./ghooks.js";
-import Objects from "./objects.js";
-import View from "./view.js";
+import renderer from "./renderer.js";
+import view from "./view.js";
+import player from "./objs/player.js";
 export var gtasmr;
 (function (gtasmr) {
     gtasmr.NO_VAR = false;
@@ -48,12 +40,12 @@ export var gtasmr;
             if (resources_loaded & 0b1 << i)
                 count++;
         if (count == RESOURCES.COUNT)
-            start();
+            init();
     }
     function reasonable_waiter() {
         if (time + MAX_WAIT < new Date().getTime()) {
             console.warn(`passed reasonable wait time for resources`);
-            start();
+            init();
         }
     }
     gtasmr.reasonable_waiter = reasonable_waiter;
@@ -71,32 +63,30 @@ export var gtasmr;
         window['GTA'] = gtasmr;
     }
     gtasmr.init = init;
-    function start() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (started)
-                return;
-            console.log(' gtasmr starting ');
-            gtasmr.view = View.make();
-            gtasmr.ply = Objects.Ply.instance();
-            gtasmr.view.add(gtasmr.ply);
-            City.load_sounds();
-            City.creation();
-            ghooks.start();
-            if (window.location.href.indexOf("#novar") != -1)
-                gtasmr.NO_VAR = false;
-            started = true;
-        });
+    async function start() {
+        if (started)
+            return;
+        console.log(' gtasmr start ');
+        gtasmr.gview = view.make();
+        gtasmr.ply = player.instance();
+        gtasmr.gview.add(gtasmr.ply);
+        city.load_sounds();
+        city.creation();
+        ghooks.start();
+        if (window.location.href.indexOf("#novar") != -1)
+            gtasmr.NO_VAR = false;
+        started = true;
     }
     gtasmr.start = start;
-    function tick() {
+    function step(delta) {
         if (!started) {
             reasonable_waiter();
             return;
         }
-        gtasmr.view.tick();
-        //Board.update();
-        //Ploppables.update();
+        gtasmr.gview.tick();
+        renderer.update();
+        renderer.render();
     }
-    gtasmr.tick = tick;
+    gtasmr.step = step;
 })(gtasmr || (gtasmr = {}));
 export default gtasmr;
