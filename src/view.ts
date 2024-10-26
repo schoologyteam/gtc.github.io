@@ -36,6 +36,7 @@ export class view {
 		obj.chunk?.remove(obj);
 	}
 	tick() {
+		lod.ggrid.ticks();
 		this.move();
 		this.chase();
 		this.mouse();

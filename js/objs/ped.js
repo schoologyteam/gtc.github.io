@@ -16,6 +16,11 @@ export class ped extends lod.obj {
         this.idling = false;
         this.size = [33, 33];
     }
+    _delete() {
+        var _a;
+        console.log('delete ped');
+        (_a = this.sprite) === null || _a === void 0 ? void 0 : _a.dispose();
+    }
     _create() {
         if (this.remap == -1)
             this.remap = Math.floor(Math.random() * 53);

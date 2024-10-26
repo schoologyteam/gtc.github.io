@@ -45,7 +45,7 @@ export namespace city {
 		new game.sprite(properties);
 		obj.wpos = pts.add(pos, [0.5, 0.5]);
 		//obj.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-		obj._step();
+		obj.step();
 		//GTA.view.add(obj);
 	};
 
@@ -57,7 +57,7 @@ export namespace city {
 			floor.wpos = pts.add(pos, [0.5, 0.5]);
 			if (pos[1] == 0)
 				floor.rz = Math.PI;
-			floor._step();
+			floor.step();
 			gtasmr.gview.add(floor);
 			console.log('add road');
 		});
@@ -69,7 +69,7 @@ export namespace city {
 			new game.sprite(props);
 			obj.wpos = pts.add(pos, [0.5, 0.5]);
 			//obj.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-			obj._step();
+			obj.step();
 			gtasmr.gview.add(obj);
 		};
 
@@ -78,7 +78,7 @@ export namespace city {
 			let properties = { ...block_tenement, bind: obj } as game.sprite.parameters;
 			properties.mask = 'sty/interiors/casual/concaveMask.bmp'
 			new game.sprite(properties);
-			obj._step();
+			obj.step();
 			gtasmr.gview.add(obj);
 		}
 

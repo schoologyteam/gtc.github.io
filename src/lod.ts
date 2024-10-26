@@ -20,7 +20,7 @@ export namespace numbers {
 };
 
 namespace lod {
-    export const size = 64;
+	export const size = 64;
 
 	const chunk_coloration = false;
 
@@ -223,8 +223,11 @@ namespace lod {
 					if (!sector.active) {
 						this.shown.push(sector);
 						sector.show();
+						console.log(' show ');
+
+						// todo why step
 						for (let obj of sector.objs)
-							obj._step();
+							obj.step();
 					}
 				}
 			}
@@ -259,9 +262,9 @@ namespace lod {
 			}
 		}
 		ticks() {
-			for (let sector of this.shown)
-				for (let obj of sector.objs)
-					obj._step();
+			for (const chunk of this.shown)
+				for (let obj of chunk.objs)
+					obj.step();
 		}
 	}
 
@@ -270,7 +273,7 @@ namespace lod {
 	};
 
 	export class obj extends toggle {
-		id = -1 
+		id = -1
 		type = 'an obj'
 		networked = false
 		solid = false
@@ -303,7 +306,7 @@ namespace lod {
 			if (this.off())
 				return;
 			this.counts[0]--;
-			//this.delete();
+			this.delete();
 			//this.shape?.hide();
 			// console.log(' obj.hide ');
 		}
@@ -318,23 +321,26 @@ namespace lod {
 			this.wtorpos();
 			return pts.clone(this.rpos);
 		}
-		protected step() {
-			this._step();
-		}
-		protected create() {
+		create() {
 			this._create();
 		}
-		_create() {
-			// implement me
+		delete() {
+			this._delete();
+		}
+		step() {
+			this._step();
+		}
+		// implement me
+		protected _create() {
 			// typically used to create a sprite
 			console.warn(' (lod) obj.create ');
 		}
-		_delete() {
-			// implement me
+		// implement me
+		protected _delete() {
 			// console.warn(' (lod) obj.delete ');
 		}
-		_step() {
-			// implement me
+		// implement me
+		protected _step() {
 			this.wtorpos();
 			this.rebound();
 		}

@@ -8,6 +8,7 @@ export var game;
     class sprite {
         constructor(props) {
             this.props = props;
+            this.props.bind.sprite = this;
             this.props.offset = this.props.offset || [0, 0];
             this.props.repeat = this.props.repeat || [1, 1];
             this.props.center = this.props.center || [0, 1];
@@ -34,8 +35,6 @@ export var game;
         }
         dispose() {
             var _a, _b, _c;
-            if (!this.mesh)
-                return;
             (_a = this.geometry) === null || _a === void 0 ? void 0 : _a.dispose();
             (_b = this.material) === null || _b === void 0 ? void 0 : _b.dispose();
             (_c = this.mesh.parent) === null || _c === void 0 ? void 0 : _c.remove(this.mesh);

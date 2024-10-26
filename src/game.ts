@@ -27,6 +27,7 @@ export namespace game {
 		constructor(
 			public readonly props: unnamed
 		) {
+			(this.props.bind as any).sprite = this;
 			this.props.offset = this.props.offset || [0, 0] as vec2;
 			this.props.repeat = this.props.repeat || [1, 1] as vec2;
 			this.props.center = this.props.center || [0, 1] as vec2;
@@ -54,14 +55,11 @@ export namespace game {
 			if (!this.mesh)
 				return;
 			this.douv();
-			
 			this.mesh.rotation.z = this.props.bind.rz;
 			this.mesh.position.fromArray([...this.props.bind.rpos, this.props.z!]);
 			this.mesh.updateMatrix();
 		}
 		dispose() {
-			if (!this.mesh)
-				return;
 			this.geometry?.dispose();
 			this.material?.dispose();
 			this.mesh.parent?.remove(this.mesh);

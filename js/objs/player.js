@@ -6,8 +6,8 @@ import ped from "./ped.js";
 const ped_uv = [0.125, 0.043478260869565216];
 export class player extends ped {
     static instance() {
-        let obj = new player;
-        return obj;
+        let ply = new player;
+        return ply;
     }
     constructor() {
         super();

@@ -17,7 +17,10 @@ namespace objects {
 			super(undefined);
 			this.size = [64, 64];
 		}
-		_create() {
+		protected _delete() {
+			this.sprite?.dispose();
+		}
+		protected _create() {
 			new game.sprite({
 				bind: this,
 				sty: this.sty,

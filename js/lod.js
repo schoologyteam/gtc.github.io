@@ -201,8 +201,10 @@ var lod;
                     if (!sector.active) {
                         this.shown.push(sector);
                         sector.show();
+                        console.log(' show ');
+                        // todo why step
                         for (let obj of sector.objs)
-                            obj._step();
+                            obj.step();
                     }
                 }
             }
@@ -236,9 +238,9 @@ var lod;
             }
         }
         ticks() {
-            for (let sector of this.shown)
-                for (let obj of sector.objs)
-                    obj._step();
+            for (const chunk of this.shown)
+                for (let obj of chunk.objs)
+                    obj.step();
         }
     }
     lod.grid = grid;
@@ -274,7 +276,7 @@ var lod;
             if (this.off())
                 return;
             this.counts[0]--;
-            //this.delete();
+            this.delete();
             //this.shape?.hide();
             // console.log(' obj.hide ');
         }
@@ -289,23 +291,26 @@ var lod;
             this.wtorpos();
             return pts.clone(this.rpos);
         }
-        step() {
-            this._step();
-        }
         create() {
             this._create();
         }
+        delete() {
+            this._delete();
+        }
+        step() {
+            this._step();
+        }
+        // implement me
         _create() {
-            // implement me
             // typically used to create a sprite
             console.warn(' (lod) obj.create ');
         }
+        // implement me
         _delete() {
-            // implement me
             // console.warn(' (lod) obj.delete ');
         }
+        // implement me
         _step() {
-            // implement me
             this.wtorpos();
             this.rebound();
         }

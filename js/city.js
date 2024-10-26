@@ -35,7 +35,7 @@ export var city;
         new game.sprite(properties);
         obj.wpos = pts.add(pos, [0.5, 0.5]);
         //obj.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-        obj._step();
+        obj.step();
         //GTA.view.add(obj);
     };
     function creation() {
@@ -45,7 +45,7 @@ export var city;
             floor.wpos = pts.add(pos, [0.5, 0.5]);
             if (pos[1] == 0)
                 floor.rz = Math.PI;
-            floor._step();
+            floor.step();
             gtasmr.gview.add(floor);
             console.log('add road');
         });
@@ -56,7 +56,7 @@ export var city;
             new game.sprite(props);
             obj.wpos = pts.add(pos, [0.5, 0.5]);
             //obj.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-            obj._step();
+            obj.step();
             gtasmr.gview.add(obj);
         };
         const tenement = (pos) => {
@@ -64,7 +64,7 @@ export var city;
             let properties = Object.assign(Object.assign({}, block_tenement), { bind: obj });
             properties.mask = 'sty/interiors/casual/concaveMask.bmp';
             new game.sprite(properties);
-            obj._step();
+            obj.step();
             gtasmr.gview.add(obj);
         };
         pts.area_every(new aabb2([-100, -1], [+100, -1]), pavement);

@@ -19,7 +19,12 @@ export class ped extends lod.obj {
         super(undefined);
         this.size = [33, 33];
     }
-    _create() {
+    protected _delete() {
+        console.log('delete ped');
+        
+        this.sprite?.dispose();
+    }
+    protected _create() {
         if (this.remap == -1)
             this.remap = Math.floor(Math.random() * 53);
         new game.sprite({
@@ -30,7 +35,7 @@ export class ped extends lod.obj {
             z: 1
         });
     }
-    _step() {
+    protected _step() {
         this.timer += renderer.delta;
         if ((this.walking || this.running) && this.timer > (this.walking ? 0.11 : 0.08)) {
             this.column = (this.column < 7) ? this.column + 1 : 0;

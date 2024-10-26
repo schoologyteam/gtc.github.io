@@ -8,6 +8,10 @@ var objects;
             this.sty = 'sty/floors/mixed/78.bmp';
             this.size = [64, 64];
         }
+        _delete() {
+            var _a;
+            (_a = this.sprite) === null || _a === void 0 ? void 0 : _a.dispose();
+        }
         _create() {
             new game.sprite({
                 bind: this,

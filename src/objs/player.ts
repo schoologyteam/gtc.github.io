@@ -9,24 +9,24 @@ const ped_uv = [0.125, 0.043478260869565216] as vec2;
 export class player extends ped {
     stopped = false;
     static instance() {
-        let obj = new player;
-        return obj;
+        let ply = new player;
+        return ply;
     }
     constructor() {
         super();
         this.remap = 52;
     }
-    _step() {
+    protected _step() {
         this.walking = false;
         this.running = false;
         let dist = pts.dist(this.rpos, gtasmr.gview.mrpos);
         const range = 48;
         if (app.key('c') == 1)
             this.stopped = !this.stopped;
-        if (!this.stopped && dist > range) {
+        if (!this.stopped && dist > range) {            
             this.idling = false;
             let velocity = -0.75;
-            if (app.button(0) >= 1) {
+            if (app.button(0) >= 1) {                
                 velocity = -1.5;
                 this.running = true;
                 this.row = 1;
