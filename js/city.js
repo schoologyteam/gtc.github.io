@@ -1,7 +1,7 @@
 import pts from "./dep/pts.js";
 import lod from "./lod.js";
-import objects from "./objects.js";
-import game from "./game.js";
+import objects from "./objs/misc.js";
+import sprite from "./sprite.js";
 import aabb2 from "./dep/aabb2.js";
 import gtasmr from "./gtasmr.js";
 export var city;
@@ -32,43 +32,32 @@ export var city;
         let properties = Object.assign(Object.assign({}, block_tenement), { bind: obj });
         properties.mask = 'sty/walls/casual/concaveMask.bmp';
         // properties.offset = [pavement_uv * 1, 0];
-        new game.sprite(properties);
+        new sprite(properties);
         obj.wpos = pts.add(pos, [0.5, 0.5]);
         //obj.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
         obj.step();
         //GTA.view.add(obj);
     };
     function creation() {
-        pts.area_every(new aabb2([-100, 0], [+100, 1]), (pos) => {
-            let floor = new objects.floor;
-            floor.sty;
-            floor.wpos = pts.add(pos, [0.5, 0.5]);
-            if (pos[1] == 0)
-                floor.rz = Math.PI;
+        const pavement = (pos) => {
+            let sprops = Object.assign({}, pavement_mixed);
+            sprops.offset = [pavement_uv * 1, 0];
+            let floor = new objects.floor(sprops);
+            floor.wpos = pos;
+            floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
             floor.step();
             gtasmr.gview.add(floor);
-            console.log('add road');
-        });
-        const pavement = (pos) => {
-            let obj = new lod.obj;
-            let props = Object.assign(Object.assign({}, pavement_mixed), { bind: obj });
-            props.offset = [pavement_uv * 1, 0];
-            new game.sprite(props);
-            obj.wpos = pts.add(pos, [0.5, 0.5]);
-            //obj.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-            obj.step();
-            gtasmr.gview.add(obj);
         };
-        const tenement = (pos) => {
+        /*const tenement = (pos: vec2) => {
             let obj = new lod.obj();
-            let properties = Object.assign(Object.assign({}, block_tenement), { bind: obj });
-            properties.mask = 'sty/interiors/casual/concaveMask.bmp';
-            new game.sprite(properties);
+            let sprops = { ...block_tenement, bind: obj } as sprite.parameters;
+            sprops.mask = 'sty/interiors/casual/concaveMask.bmp'
+            new sprite(sprops);
             obj.step();
             gtasmr.gview.add(obj);
-        };
+        }*/
+        pts.area_every(new aabb2([-100, 2], [+100, 3]), pavement);
         pts.area_every(new aabb2([-100, -1], [+100, -1]), pavement);
-        pts.area_every(new aabb2([-100, 2], [+100, 2]), pavement);
         pts.area_every(new aabb2([0, -2], [0 - 3, -2 - 1]), make_room);
         //pts.area_every(new aabb2([-10, 3], [+10, 3]), tenement);
     }

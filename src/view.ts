@@ -4,7 +4,7 @@ import pts from "./dep/pts.js";
 import renderer from "./renderer.js";
 
 import lod, { numbers } from "./lod.js";
-import objects from "./objects.js";
+import objects from "./objs/misc.js";
 import ghooks from "./ghooks.js";
 import gtasmr from "./gtasmr.js";
 import ped from "./objs/ped.js";

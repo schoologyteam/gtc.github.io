@@ -4,22 +4,20 @@ import renderer from "./renderer.js";
 ;
 ;
 export class sprite {
-    constructor(props) {
-        this.props = props;
+    constructor(sprops) {
+        this.sprops = sprops;
         this.rposoffset = [0, 0];
-        this.props.bind.sprite = this;
-        this.props.offset = this.props.offset || [0, 0];
-        this.props.repeat = this.props.repeat || [1, 1];
-        this.props.center = this.props.center || [0, 1];
-        this.props.z = this.props.z || 0;
+        this.sprops.bind.sprite = this;
+        this.sprops.offset = this.sprops.offset || [0, 0];
+        this.sprops.repeat = this.sprops.repeat || [1, 1];
+        this.sprops.center = this.sprops.center || [0, 1];
+        this.sprops.z = this.sprops.z || 0;
         this.rotation = 0;
         this.matrix = new THREE.Matrix3;
-        this.douv();
-        this.create();
     }
     douv() {
         // todo
-        this.matrix.setUvTransform(this.props.offset[0], this.props.offset[1], this.props.repeat[0], this.props.repeat[1], this.rotation, this.props.center[0], this.props.center[1]);
+        this.matrix.setUvTransform(this.sprops.offset[0], this.sprops.offset[1], this.sprops.repeat[0], this.sprops.repeat[1], this.rotation, this.sprops.center[0], this.sprops.center[1]);
         // this is built-in
         // this.material.map.matrix.copy(this.matrix);
         // this.material.map.matrixAutoUpdate = false;
@@ -28,9 +26,9 @@ export class sprite {
         if (!this.mesh)
             return;
         this.douv();
-        let pos = pts.add(this.props.bind.rpos, this.rposoffset);
-        this.mesh.rotation.z = this.props.bind.rz;
-        this.mesh.position.fromArray([...pos, this.props.z]);
+        let pos = pts.add(this.sprops.bind.rpos, this.rposoffset);
+        this.mesh.rotation.z = this.sprops.bind.rz;
+        this.mesh.position.fromArray([...pos, this.sprops.z]);
         this.mesh.updateMatrix();
     }
     dispose() {
@@ -40,18 +38,18 @@ export class sprite {
         (_c = this.mesh.parent) === null || _c === void 0 ? void 0 : _c.remove(this.mesh);
     }
     create() {
-        let pt = pts.clone(this.props.bind.size);
+        let pt = pts.clone(this.sprops.bind.size);
         pts.mult(pt, lod.size);
         this.geometry = new THREE.PlaneGeometry(pt[0], pt[1]);
         this.material = MySpriteMaterial({
-            map: renderer.load_texture(this.props.sty),
-            // color: 'green',
+            map: renderer.load_texture(this.sprops.sty),
+            color: this.sprops.color || 'white',
             transparent: true,
             shininess: 0
         }, {
             matrix: this.matrix,
-            blurMap: (this.props.blur ? renderer.load_texture(this.props.blur) : null),
-            maskMap: (this.props.mask ? renderer.load_texture(this.props.mask) : null)
+            blurMap: (this.sprops.blur ? renderer.load_texture(this.sprops.blur) : null),
+            maskMap: (this.sprops.mask ? renderer.load_texture(this.sprops.mask) : null)
         });
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.frustumCulled = false;

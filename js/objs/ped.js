@@ -1,11 +1,12 @@
 import city from "../city.js";
-import game from "../game.js";
+import sprite from "../sprite.js";
 import lod from "../lod.js";
 import renderer from "../renderer.js";
+import baseobj from "./baseobj.js";
 const ped_uv = [0.125, 0.043478260869565216];
-export class ped extends lod.obj {
+export class ped extends baseobj {
     constructor() {
-        super(undefined);
+        super({ name: 'a pedestrian' });
         this.rz = 0;
         this.remap = -1;
         this.timer = 0;
@@ -24,13 +25,14 @@ export class ped extends lod.obj {
     _create() {
         if (this.remap == -1)
             this.remap = Math.floor(Math.random() * 53);
-        new game.sprite({
+        new sprite({
             bind: this,
             sty: `sty/ped/template_${this.remap}.png`,
             blur: `sty/ped/blur.png`,
             repeat: ped_uv,
             z: 1
         });
+        this.sprite.create();
     }
     _step() {
         var _a;
@@ -60,7 +62,7 @@ export class ped extends lod.obj {
             this.timer = 0;
         }
         if (this.sprite)
-            this.sprite.props.offset = [ped_uv[0] * this.column, -ped_uv[1] * this.row];
+            this.sprite.sprops.offset = [ped_uv[0] * this.column, -ped_uv[1] * this.row];
         (_a = this.sprite) === null || _a === void 0 ? void 0 : _a.step();
         super._step();
         lod.chunk.swap(this);

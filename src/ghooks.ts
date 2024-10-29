@@ -1,6 +1,6 @@
 import lod from "./lod.js";
 import view from "./view.js";
-import objects from "./objects.js";
+import objects from "./objs/misc.js";
 
 // high level game happenings
 

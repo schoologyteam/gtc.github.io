@@ -1,6 +1,6 @@
-import lod from "./lod.js";
-import game from "./game.js";
-import baseobj from "./objs/baseobj.js";
+import lod from "../lod.js";
+import game from "../game.js";
+import baseobj from "./baseobj.js";
 var objects;
 (function (objects) {
     class floor extends baseobj {
