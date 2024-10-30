@@ -3,6 +3,8 @@ import pts from "./dep/pts.js";
 import renderer from "./renderer.js";
 ;
 ;
+const default_sprite_shadow_opacity = 0.7;
+const default_sprite_shadow_offset = [4, -4];
 export class sprite {
     constructor(sprops) {
         this.sprops = sprops;
@@ -11,6 +13,8 @@ export class sprite {
         this.sprops.offset = this.sprops.offset || [0, 0];
         this.sprops.repeat = this.sprops.repeat || [1, 1];
         this.sprops.center = this.sprops.center || [0, 1];
+        this.sprops.shadowOpacity = this.sprops.shadowOpacity || default_sprite_shadow_opacity;
+        this.sprops.shadowOffset = this.sprops.shadowOffset || default_sprite_shadow_offset;
         this.sprops.z = this.sprops.z || 0;
         this.rotation = 0;
         this.matrix = new THREE.Matrix3;
@@ -23,6 +27,7 @@ export class sprite {
         // this.material.map.matrixAutoUpdate = false;
     }
     step() {
+        var _a;
         if (!this.mesh)
             return;
         this.douv();
@@ -30,6 +35,11 @@ export class sprite {
         this.mesh.rotation.z = this.sprops.bind.rz;
         this.mesh.position.fromArray([...pos, this.sprops.z]);
         this.mesh.updateMatrix();
+        if (this.shadowMesh) {
+            this.shadowMesh.rotation.z = this.sprops.bind.rz;
+            (_a = this.shadowMesh) === null || _a === void 0 ? void 0 : _a.position.fromArray([...pts.add(pos, this.sprops.shadowOffset), this.sprops.z - 0.5]);
+            this.shadowMesh.updateMatrix();
+        }
     }
     dispose() {
         var _a, _b, _c;
@@ -56,6 +66,20 @@ export class sprite {
         this.mesh.matrixAutoUpdate = false;
         this.step();
         renderer.scene.add(this.mesh);
+        if (this.sprops.hasShadow) {
+            let material = MySpriteMaterial({
+                map: renderer.load_texture(this.sprops.sty),
+                color: 'black',
+                transparent: true,
+                opacity: 0.7,
+            }, {
+                matrix: this.matrix,
+            });
+            this.shadowMesh = new THREE.Mesh(this.geometry, material);
+            this.shadowMesh.frustumCulled = false;
+            this.shadowMesh.matrixAutoUpdate = false;
+            renderer.scene.add(this.shadowMesh);
+        }
     }
 }
 ;

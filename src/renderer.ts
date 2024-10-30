@@ -15,7 +15,7 @@ varying vec2 vUv;
 uniform sampler2D tDiffuse;
 void main() {
 	vec4 clr = texture2D( tDiffuse, vUv );
-	clr.rgb = mix(clr.rgb, vec3(0.5), 0.1);
+	//clr.rgb = mix(clr.rgb, vec3(0.5), 0.5);
 	gl_FragColor = clr;
 }`
 
@@ -116,7 +116,7 @@ namespace renderer {
 		directionalLight = new THREE.DirectionalLight(0x355886, 1.0);
 		directionalLight.position.set(0, 0, 1);
 
-		//scene.add(directionalLight); 
+		scene.add(directionalLight); 
 		scene.add(ambientLight);
 
 		if (DPI_UPSCALED_RT)

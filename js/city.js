@@ -22,7 +22,7 @@ export var city;
     })(generator || (generator = {}));
     const pavement_uv = 0.25;
     const road_uv = 0.2;
-    const road_typical = { sty: 'sty/sheets/grey_roads.png', repeat: [road_uv, road_uv] };
+    const road_typical = { sty: 'sty/sheets/grey_roads.png', repeat: [road_uv, road_uv], offset: [0, 0] };
     const pavement_typical = { sty: 'sty/floors/green/645.bmp', /*repeat: [pavement_uv, pavement_uv]*/ };
     const pavement_blue = { sty: 'sty/floors/blue/256.bmp' };
     const pavement_mixed = { sty: 'sty/floors/mixed/64.bmp' };
@@ -41,7 +41,6 @@ export var city;
     function creation() {
         const pavement = (pos) => {
             let sprops = Object.assign({}, pavement_mixed);
-            sprops.offset = [pavement_uv * 1, 0];
             let floor = new objects.floor(sprops);
             floor.wpos = pos;
             floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);

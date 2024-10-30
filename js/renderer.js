@@ -11,7 +11,7 @@ varying vec2 vUv;
 uniform sampler2D tDiffuse;
 void main() {
 	vec4 clr = texture2D( tDiffuse, vUv );
-	clr.rgb = mix(clr.rgb, vec3(0.5), 0.1);
+	//clr.rgb = mix(clr.rgb, vec3(0.5), 0.5);
 	gl_FragColor = clr;
 }`;
 const vertexScreen = `
@@ -70,7 +70,7 @@ var renderer;
         renderer_1.ambientLight = new THREE.AmbientLight('white');
         renderer_1.directionalLight = new THREE.DirectionalLight(0x355886, 1.0);
         renderer_1.directionalLight.position.set(0, 0, 1);
-        //scene.add(directionalLight); 
+        renderer_1.scene.add(renderer_1.directionalLight);
         renderer_1.scene.add(renderer_1.ambientLight);
         if (renderer_1.DPI_UPSCALED_RT)
             renderer_1.ndpi = window.devicePixelRatio;

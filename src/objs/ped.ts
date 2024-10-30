@@ -33,7 +33,8 @@ export class ped extends baseobj {
 			sty: `sty/ped/template_${this.remap}.png`,
 			blur: `sty/ped/blur.png`,
 			repeat: ped_uv,
-			z: 1
+			hasShadow: true,
+			z: 2
 		});
 		this.sprite!.create();
 	}

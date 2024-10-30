@@ -10,6 +10,9 @@ interface unnamed {
 	bind: lod.obj,
 	sty: string,
 	color?: string,
+	hasShadow?: boolean,
+	shadowOpacity?: number,
+	shadowOffset?: vec2,
 	offset?: vec2,
 	repeat?: vec2,
 	center?: vec2,
@@ -18,9 +21,13 @@ interface unnamed {
 	z?: number
 };
 
+const default_sprite_shadow_opacity = 0.7;
+const default_sprite_shadow_offset = [4, -4] as vec2;
+
 export class sprite {
 	rposoffset = [0, 0] as vec2
 	mesh
+	shadowMesh
 	material
 	geometry
 	rotation
@@ -32,6 +39,8 @@ export class sprite {
 		this.sprops.offset = this.sprops.offset || [0, 0] as vec2;
 		this.sprops.repeat = this.sprops.repeat || [1, 1] as vec2;
 		this.sprops.center = this.sprops.center || [0, 1] as vec2;
+		this.sprops.shadowOpacity = this.sprops.shadowOpacity || default_sprite_shadow_opacity;
+		this.sprops.shadowOffset = this.sprops.shadowOffset || default_sprite_shadow_offset;
 		this.sprops.z = this.sprops.z || 0;
 		this.rotation = 0;
 		this.matrix = new THREE.Matrix3;
@@ -58,6 +67,11 @@ export class sprite {
 		this.mesh.rotation.z = this.sprops.bind.rz;
 		this.mesh.position.fromArray([...pos, this.sprops.z!]);
 		this.mesh.updateMatrix();
+		if (this.shadowMesh) {
+			this.shadowMesh.rotation.z = this.sprops.bind.rz;
+			this.shadowMesh?.position.fromArray([...pts.add(pos, this.sprops.shadowOffset!), this.sprops.z! - 0.5]);
+			this.shadowMesh.updateMatrix();
+		}
 	}
 	dispose() {
 		this.geometry?.dispose();
@@ -83,13 +97,27 @@ export class sprite {
 		this.mesh.matrixAutoUpdate = false;
 		this.step();
 		renderer.scene.add(this.mesh);
+		if (this.sprops.hasShadow) {
+			let material = MySpriteMaterial({
+				map: renderer.load_texture(this.sprops.sty),
+				color: 'black',
+				transparent: true,
+				opacity: 0.7,
+			}, {
+				matrix: this.matrix,
+			});
+			this.shadowMesh = new THREE.Mesh(this.geometry, material);
+			this.shadowMesh.frustumCulled = false;
+			this.shadowMesh.matrixAutoUpdate = false;
+			renderer.scene.add(this.shadowMesh);
+		}
 	}
 };
 
 function MySpriteMaterial(parameters, uniforms: any) {
 	let material = new THREE.MeshPhongMaterial(parameters);
 	material.name = "MeshPhongSpriteMaterial";
-	material.customProgramCacheKey = function() {
+	material.customProgramCacheKey = function () {
 		let str = '';
 		if (uniforms.blurMap)
 			str += 'blurMap';
