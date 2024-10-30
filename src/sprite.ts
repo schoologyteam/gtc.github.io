@@ -10,9 +10,9 @@ interface unnamed {
 	bind: lod.obj,
 	sty: string,
 	color?: string,
-	hasShadow?: boolean,
-	shadowOpacity?: number,
-	shadowOffset?: vec2,
+	shadowing?: boolean,
+	shade?: number,
+	shadowLength?: vec2,
 	offset?: vec2,
 	repeat?: vec2,
 	center?: vec2,
@@ -27,11 +27,11 @@ const default_sprite_shadow_offset = [4, -4] as vec2;
 export class sprite {
 	rposoffset = [0, 0] as vec2
 	mesh
-	shadowMesh
 	material
 	geometry
 	rotation
 	matrix
+	shadow?: shadow
 	constructor(
 		public readonly sprops: unnamed
 	) {
@@ -39,8 +39,8 @@ export class sprite {
 		this.sprops.offset = this.sprops.offset || [0, 0] as vec2;
 		this.sprops.repeat = this.sprops.repeat || [1, 1] as vec2;
 		this.sprops.center = this.sprops.center || [0, 1] as vec2;
-		this.sprops.shadowOpacity = this.sprops.shadowOpacity || default_sprite_shadow_opacity;
-		this.sprops.shadowOffset = this.sprops.shadowOffset || default_sprite_shadow_offset;
+		this.sprops.shade = this.sprops.shade || default_sprite_shadow_opacity;
+		this.sprops.shadowLength = this.sprops.shadowLength || default_sprite_shadow_offset;
 		this.sprops.z = this.sprops.z || 0;
 		this.rotation = 0;
 		this.matrix = new THREE.Matrix3;
@@ -67,16 +67,13 @@ export class sprite {
 		this.mesh.rotation.z = this.sprops.bind.rz;
 		this.mesh.position.fromArray([...pos, this.sprops.z!]);
 		this.mesh.updateMatrix();
-		if (this.shadowMesh) {
-			this.shadowMesh.rotation.z = this.sprops.bind.rz;
-			this.shadowMesh?.position.fromArray([...pts.add(pos, this.sprops.shadowOffset!), this.sprops.z! - 0.5]);
-			this.shadowMesh.updateMatrix();
-		}
+		this.shadow?.step();
 	}
 	dispose() {
 		this.geometry?.dispose();
 		this.material?.dispose();
 		this.mesh.parent?.remove(this.mesh);
+		this.shadow?.end();
 	}
 	create() {
 		let pt = pts.clone(this.sprops.bind.size);
@@ -97,20 +94,45 @@ export class sprite {
 		this.mesh.matrixAutoUpdate = false;
 		this.step();
 		renderer.scene.add(this.mesh);
-		if (this.sprops.hasShadow) {
-			let material = MySpriteMaterial({
-				map: renderer.load_texture(this.sprops.sty),
-				color: 'black',
-				transparent: true,
-				opacity: 0.7,
-			}, {
-				matrix: this.matrix,
-			});
-			this.shadowMesh = new THREE.Mesh(this.geometry, material);
-			this.shadowMesh.frustumCulled = false;
-			this.shadowMesh.matrixAutoUpdate = false;
-			renderer.scene.add(this.shadowMesh);
-		}
+		if (this.sprops.shadowing)
+			this.shadow = new shadow(this);
+	}
+};
+
+export class shadow {
+	mesh
+	material
+	sprops
+	constructor(
+		public readonly sprite: sprite
+	) {
+		const { sprops } = sprite;
+		this.sprops = sprops;
+		console.log('sprops', sprops);
+		
+		this.material = MySpriteMaterial({
+			map: renderer.load_texture(this.sprops.sty),
+			color: 'black',
+			transparent: true,
+			opacity: 0.7,
+		}, {
+			matrix: this.sprite.matrix,
+			// blurMap: (this.sprops.blur ? renderer.load_texture(this.sprops.blur) : null),
+		});
+		this.mesh = new THREE.Mesh(this.sprite.geometry, this.material);
+		this.mesh.frustumCulled = false;
+		this.mesh.matrixAutoUpdate = false;
+		renderer.scene.add(this.mesh);
+	}
+	end() {
+		this.material?.dispose();
+		this.mesh.parent?.remove(this.mesh);
+	}
+	step() {
+		let pos = pts.add(this.sprops.bind.rpos, this.sprite.rposoffset);
+		this.mesh.rotation.z = this.sprops.bind.rz;
+		this.mesh?.position.fromArray([...pts.add(pos, this.sprops.shadowLength!), this.sprops.z! - 0.5]);
+		this.mesh.updateMatrix();
 	}
 };
 
