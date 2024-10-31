@@ -6,7 +6,7 @@ export namespace sprite {
 	export type parameters = sprite['sprops'];
 };
 
-interface unnamed {
+interface rules {
 	bind: lod.obj,
 	sty: string,
 	color?: string,
@@ -33,7 +33,7 @@ export class sprite {
 	matrix
 	shadow?: shadow
 	constructor(
-		public readonly sprops: unnamed
+		public readonly sprops: rules
 	) {
 		(this.sprops.bind as any).sprite = this;
 		this.sprops.offset = this.sprops.offset || [0, 0] as vec2;
@@ -108,8 +108,6 @@ export class shadow {
 	) {
 		const { sprops } = sprite;
 		this.sprops = sprops;
-		console.log('sprops', sprops);
-		
 		this.material = MySpriteMaterial({
 			map: renderer.load_texture(this.sprops.sty),
 			color: 'black',

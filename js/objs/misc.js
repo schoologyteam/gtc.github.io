@@ -1,12 +1,10 @@
 import sprite from "../sprite.js";
-import gtasmr from "../gtasmr.js";
 import baseobj from "./baseobj.js";
 var objects;
 (function (objects) {
     class floor extends baseobj {
-        constructor(sprops) {
-            super({ name: 'a floor' });
-            this.sprops = sprops;
+        constructor(props) {
+            super({ name: 'a floor', fakewpos: [0, 0, 0] });
             this.sty = 'sty/floors/mixed/78.bmp';
             this.size = [64, 64];
         }
@@ -16,12 +14,25 @@ var objects;
         }
         _create() {
             let sprops = Object.assign(Object.assign({}, this.sprops), { bind: this });
-            sprops.color = gtasmr.sample(['red', 'salmon', 'pink', 'cyan']);
+            // sprops.color = gtasmr.sample(['red', 'salmon', 'pink', 'cyan'])
             new sprite(sprops);
             //this.sprite!.rposoffset = pts.mult([0.5, 0], lod.size);
             this.sprite.create();
         }
     }
     objects.floor = floor;
+    class block extends baseobj {
+        constructor(sprops) {
+            super({ name: 'a block', fakewpos: [0] });
+            this.sprops = sprops;
+            this.size = [64, 64];
+        }
+        _delete() {
+        }
+        _create() {
+            this.geometry = new THREE.BoxGeometry(64, 64, 64);
+        }
+    }
+    objects.block = block;
 })(objects || (objects = {}));
 export default objects;

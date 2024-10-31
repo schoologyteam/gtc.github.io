@@ -41,11 +41,20 @@ export var city;
     function creation() {
         const pavement = (pos) => {
             let sprops = Object.assign({}, pavement_mixed);
-            let floor = new objects.floor(sprops);
+            let floor = new objects.floor({ name: 'pavement', fakewpos: pos });
+            floor.sprops = sprops;
             floor.wpos = pos;
             floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
             floor.step();
             gtasmr.gview.add(floor);
+        };
+        const road = (pos) => {
+            /*let sprops = { ...pavement_mixed } as sprite.parameters;
+            let floor = new objects.floor(sprops);
+            floor.wpos = pos;
+            floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
+            floor.step();
+            gtasmr.gview.add(floor);*/
         };
         /*const tenement = (pos: vec2) => {
             let obj = new lod.obj();

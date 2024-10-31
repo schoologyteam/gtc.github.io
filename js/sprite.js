@@ -73,7 +73,6 @@ export class shadow {
         this.sprite = sprite;
         const { sprops } = sprite;
         this.sprops = sprops;
-        console.log('sprops', sprops);
         this.material = MySpriteMaterial({
             map: renderer.load_texture(this.sprops.sty),
             color: 'black',

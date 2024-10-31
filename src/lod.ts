@@ -79,7 +79,7 @@ namespace lod {
 		at(big: vec2): chunk {
 			return this.lookup(big) || this.make(big);
 		}
-		atwpos(wpos: vec2): chunk {
+		atwpos(wpos: vec2 | vec3): chunk {
 			return this.at(world.big(wpos));
 		}
 		protected make(big): chunk {
@@ -89,7 +89,7 @@ namespace lod {
 			s = this.arrays[big[1]][big[0]] = new chunk(big, this);
 			return s;
 		}
-		static big(units: vec2): vec2 {
+		static big(units: vec2 | vec3): vec2 {
 			return pts.floor(pts.divide(units, SectorSpan));
 		}
 		// todo add(obj) {}

@@ -4,14 +4,13 @@ declare type vec2 = [number, number];
 
 declare var THREE: any
 
-declare interface Point {
-	x: number
-	y: number
+interface objprops {
+	fakewpos: vec3,
+	name: string
+	r?: number
 }
 
-declare interface Asset {
-	readonly img: string
-	readonly size: vec2
-	readonly area?: vec2
-	readonly offset?: vec2
-}
+declare class baseobj {constructor(objprops)}
+
+type bobj = baseobj
+type propz = objprops

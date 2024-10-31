@@ -2,6 +2,8 @@ import aabb2 from "./aabb2.js";
 
 export interface Pt { x: number; y: number };
 
+type same = vec2 | vec3;
+
 class pts {
 	static pt(a: vec2): Pt {
 		return { x: a[0], y: a[1] };
@@ -94,7 +96,7 @@ class pts {
 		return [a[0] * b[0], a[1] * b[1]];
 	}
 
-	static divide(a: vec2, n: number, m?: number): vec2 {
+	static divide(a: same, n: number, m?: number): vec2 {
 		return [a[0] / n, a[1] / (m || n)];
 	}
 

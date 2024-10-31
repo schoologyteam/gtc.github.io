@@ -1,8 +1,9 @@
 import lod from "../lod.js";
 export class baseobj extends lod.obj {
-    constructor(oprops) {
+    constructor(props) {
         super(undefined);
-        this.oprops = oprops;
+        this.props = props;
+        this.wpos = props.fakewpos;
     }
     _delete() {
     }

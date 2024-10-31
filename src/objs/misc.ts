@@ -14,9 +14,9 @@ namespace objects {
 	export class floor extends baseobj {
 		sty = 'sty/floors/mixed/78.bmp'
 		sprite?: sprite
-		constructor(
-			public sprops: sprite.parameters) {
-			super({ name: 'a floor' });
+		sprops: sprite.parameters
+		constructor(props: propz) {
+			super({ name: 'a floor', fakewpos: [0, 0, 0] });
 			this.size = [64, 64];
 		}
 		protected override _delete() {
@@ -24,10 +24,29 @@ namespace objects {
 		}
 		protected override _create() {
 			let sprops = { ...this.sprops, bind: this } as sprite.parameters;
-			sprops.color = gtasmr.sample(['red', 'salmon', 'pink', 'cyan'])
+			// sprops.color = gtasmr.sample(['red', 'salmon', 'pink', 'cyan'])
 			new sprite(sprops);
 			//this.sprite!.rposoffset = pts.mult([0.5, 0], lod.size);
 			this.sprite!.create();
+		}
+	}
+
+	export class block extends baseobj {
+		faces: ['0', '0', '0', '0', '0']
+		materials
+		geometry
+		mesh
+		constructor(
+			public sprops: sprite.parameters) {
+			super({ name: 'a block', fakewpos: [0] as unknown as vec3 });
+			this.size = [64, 64];
+		}
+		protected override _delete() {
+
+		}
+		protected override _create() {
+			this.geometry = new THREE.BoxGeometry(64, 64, 64);
+
 		}
 	}
 
