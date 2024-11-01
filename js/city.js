@@ -2,24 +2,23 @@ import pts from "./dep/pts.js";
 import lod from "./lod.js";
 import objects from "./objs/misc.js";
 import sprite from "./sprite.js";
-import aabb2 from "./dep/aabb2.js";
-import gtasmr from "./gtasmr.js";
+import generators from "./city/generators.js";
 export var city;
 (function (city) {
     city.sounds = { footsteps: [] };
-    let generator;
-    (function (generator) {
-        function run(min, max, func) {
-            let x = min[0];
-            for (; x <= max[0]; x++) {
-                let y = min[1];
-                for (; y <= max[1]; y++) {
-                    func([x, y]);
+    function run3d(min, max, func) {
+        let x = min[0];
+        for (; x <= max[0]; x++) {
+            let y = min[1];
+            for (; y <= max[1]; y++) {
+                let z = min[2];
+                for (; z <= max[2]; z++) {
+                    func([x, y, z]);
                 }
             }
         }
-        generator.run = run;
-    })(generator || (generator = {}));
+    }
+    city.run3d = run3d;
     const pavement_uv = 0.25;
     const road_uv = 0.2;
     const road_typical = { sty: 'sty/sheets/grey_roads.png', repeat: [road_uv, road_uv], offset: [0, 0] };
@@ -42,36 +41,17 @@ export var city;
         const pavement = (pos) => {
             let sprops = Object.assign({}, pavement_mixed);
             let floor = new objects.floor({
+                _type: 'direct',
+                _wpos: pos,
                 name: 'a pavement',
-                type: 'dud',
-                _wpos: pos
             });
             floor.sprops = sprops;
-            floor.wpos = pos;
-            floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-            floor.step();
-            gtasmr.gview.add(floor);
+            floor.r = Math.PI / 2 * Math.floor(Math.random() * 4);
+            lod.add(floor);
         };
-        const road = (pos) => {
-            /*let sprops = { ...pavement_mixed } as sprite.parameters;
-            let floor = new objects.floor(sprops);
-            floor.wpos = pos;
-            floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-            floor.step();
-            gtasmr.gview.add(floor);*/
-        };
-        /*const tenement = (pos: vec2) => {
-            let obj = new lod.obj();
-            let sprops = { ...block_tenement, bind: obj } as sprite.parameters;
-            sprops.mask = 'sty/interiors/casual/concaveMask.bmp'
-            new sprite(sprops);
-            obj.step();
-            gtasmr.gview.add(obj);
-        }*/
-        pts.area_every(new aabb2([-100, 2], [+100, 3]), pavement);
-        pts.area_every(new aabb2([-100, -1], [+100, -1]), pavement);
-        pts.area_every(new aabb2([0, -2], [0 - 3, -2 - 1]), make_room);
-        //pts.area_every(new aabb2([-10, 3], [+10, 3]), tenement);
+        run3d([-100, 2, 0], [+100, 3, 0], pavement);
+        run3d([-100, -1, 0], [+100, -1, 0], pavement);
+        generators.twolane(0, [0, 0, 0], 5);
     }
     city.creation = creation;
     function load_sounds() {

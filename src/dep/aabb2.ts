@@ -6,6 +6,8 @@ enum TEST {
     Overlap
 }
 
+type indiscriminate = vec2 | vec3
+
 class aabb2 {
 	static readonly TEST = TEST;
 	min: vec2
@@ -19,7 +21,7 @@ class aabb2 {
 			this.extend(b);
 		}
 	}
-	extend(v: vec2) {
+	extend(v: indiscriminate) {
 		this.min = pts.min(this.min, v);
 		this.max = pts.max(this.max, v);
 	}

@@ -38,8 +38,10 @@ var lod;
     }
     lod.unproject = unproject;
     function add(obj) {
-        let sector = lod.gworld.at(lod.world.big(obj.wpos));
-        sector.add(obj);
+        if (!obj)
+            return;
+        let chunk = lod.gworld.atwpos(obj.wpos);
+        chunk.add(obj);
     }
     lod.add = add;
     function remove(obj) {
@@ -203,8 +205,8 @@ var lod;
                         sector.show();
                         console.log(' show ');
                         // todo why step
-                        for (let obj of sector.objs)
-                            obj.step();
+                        // for (let obj of sector.objs)
+                        // obj.step();
                     }
                 }
             }
@@ -250,14 +252,10 @@ var lod;
             super();
             this.counts = counts;
             this.id = -1;
-            this.type = 'an obj';
-            this.networked = false;
-            this.solid = false;
             this.wpos = [0, 0];
             this.rpos = [0, 0];
             this.size = [64, 64];
             this.expand = .5;
-            this.rz = 0;
             this.counts[1]++;
         }
         finalize() {
@@ -289,7 +287,7 @@ var lod;
         }
         rtospos() {
             this.wtorpos();
-            return pts.clone(this.rpos);
+            return pts.copy(this.rpos);
         }
         create() {
             this._create();
@@ -313,9 +311,6 @@ var lod;
         _step() {
             this.wtorpos();
             this.rebound();
-        }
-        is_type(types) {
-            return types.indexOf(this.type) != -1;
         }
     }
     lod.obj = obj;

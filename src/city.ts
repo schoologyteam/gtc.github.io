@@ -7,21 +7,23 @@ import view from "./view.js";
 import sprite from "./sprite.js";
 import aabb2 from "./dep/aabb2.js";
 import gtasmr from "./gtasmr.js";
+import generators from "./city/generators.js";
 
 export namespace city {
 
 	export var sounds: any = { footsteps: [] };
 
-	namespace generator {
-		export function run(
-			min: vec2,
-			max: vec2,
-			func: (pos: vec2) => any) {
-			let x = min[0];
-			for (; x <= max[0]; x++) {
-				let y = min[1];
-				for (; y <= max[1]; y++) {
-					func([x, y]);
+	export function run3d(
+		min: vec3,
+		max: vec3,
+		func: (w: vec3) => any) {
+		let x = min[0];
+		for (; x <= max[0]; x++) {
+			let y = min[1];
+			for (; y <= max[1]; y++) {
+				let z = min[2];
+				for (; z <= max[2]; z++) {
+					func([x, y, z]);
 				}
 			}
 		}
@@ -50,43 +52,22 @@ export namespace city {
 
 	export function creation() {
 
-		const pavement = (pos: vec2) => {
+		const pavement = (pos: vec3) => {
 			let sprops = { ...pavement_mixed } as sprite.parameters;
 			let floor = new objects.floor({
+				_type: 'direct',
+				_wpos: pos,
 				name: 'a pavement',
-				type: 'dud',
-				_wpos: pos as unknown as vec3
 			});
 			floor.sprops = sprops;
-			floor.wpos = pos;
-			floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-			floor.step();
-			gtasmr.gview.add(floor);
+			floor.r = Math.PI / 2 * Math.floor(Math.random() * 4);
+			lod.add(floor);
 		};
 
-		const road = (pos: vec2) => {
-			/*let sprops = { ...pavement_mixed } as sprite.parameters;
-			let floor = new objects.floor(sprops);
-			floor.wpos = pos;
-			floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
-			floor.step();
-			gtasmr.gview.add(floor);*/
-		};
+		run3d([-100, 2, 0], [+100, 3, 0], pavement);
+		run3d([-100, -1, 0], [+100, -1, 0], pavement);
 
-		/*const tenement = (pos: vec2) => {
-			let obj = new lod.obj();
-			let sprops = { ...block_tenement, bind: obj } as sprite.parameters;
-			sprops.mask = 'sty/interiors/casual/concaveMask.bmp'
-			new sprite(sprops);
-			obj.step();
-			gtasmr.gview.add(obj);
-		}*/
-
-		pts.area_every(new aabb2([-100, 2], [+100, 3]), pavement);
-		pts.area_every(new aabb2([-100, -1], [+100, -1]), pavement);
-
-		pts.area_every(new aabb2([0, -2], [0 - 3, -2 - 1]), make_room);
-		//pts.area_every(new aabb2([-10, 3], [+10, 3]), tenement);
+		generators.twolane(0, [0, 0, 0], 5);
 	}
 
 	export function load_sounds() {

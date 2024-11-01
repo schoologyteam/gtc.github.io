@@ -51,9 +51,11 @@ namespace lod {
 		return pts.divide(pixel, size);
 	}
 
-	export function add(obj: obj) {
-		let sector = gworld.at(lod.world.big(obj.wpos));
-		sector.add(obj);
+	export function add(obj: obj | undefined) {
+		if (!obj)
+			return;
+		let chunk = gworld.atwpos(obj.wpos);
+		chunk.add(obj);
 	}
 
 	export function remove(obj: obj) {
@@ -226,8 +228,8 @@ namespace lod {
 						console.log(' show ');
 
 						// todo why step
-						for (let obj of sector.objs)
-							obj.step();
+						// for (let obj of sector.objs)
+							// obj.step();
 					}
 				}
 			}
@@ -274,17 +276,12 @@ namespace lod {
 
 	export class obj extends toggle {
 		id = -1
-		type = 'an obj'
-		networked = false
-		solid = false
 		wpos: vec2 = [0, 0]
 		rpos: vec2 = [0, 0]
 		size: vec2 = [64, 64]
-		//subsize: vec2 = [0, 0]
 		chunk: chunk | null
 		bound: aabb2
 		expand = .5
-		rz = 0
 		constructor(
 			public readonly counts: numbers.tally = numbers.objs) {
 			super();
@@ -319,7 +316,7 @@ namespace lod {
 		}
 		rtospos() {
 			this.wtorpos();
-			return pts.clone(this.rpos);
+			return pts.copy(this.rpos);
 		}
 		create() {
 			this._create();
@@ -343,9 +340,6 @@ namespace lod {
 		protected _step() {
 			this.wtorpos();
 			this.rebound();
-		}
-		is_type(types: string[]) {
-			return types.indexOf(this.type) != -1;
 		}
 	}
 

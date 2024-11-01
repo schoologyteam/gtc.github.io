@@ -28,13 +28,6 @@ export class view {
 	constructor() {
 		new lod.world(10);
 	}
-	add(obj: lod.obj) {
-		let sector = lod.gworld.atwpos(obj.wpos);
-		sector.add(obj);
-	}
-	remove(obj: lod.obj) {
-		obj.chunk?.remove(obj);
-	}
 	tick() {
 		lod.ggrid.ticks();
 		this.move();
@@ -50,13 +43,16 @@ export class view {
 		mouse = pts.mult(mouse, renderer.ndpi);
 		mouse = pts.mult(mouse, this.zoom);
 		mouse[1] = -mouse[1];
-		this.mpos = pts.clone(mouse);
+		this.mpos = pts.copy(mouse);
 		this.mrpos = pts.add(this.rpos, mouse);
 		// now..
 		if (app.button(2) >= 1) {
-			let ping = new ped({ type: 'ped', _wpos: [0, 0, 0] });
-			ping.wpos = lod.unproject(this.mrpos);
-			this.add(ping);
+			let w = lod.unproject(this.mrpos);
+			let ping = new ped({
+				_type: 'direct',
+				_wpos: [...w, 0]
+			});
+			lod.add(ping);
 		}
 	}
 	move() {

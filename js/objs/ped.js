@@ -6,8 +6,7 @@ import baseobj from "./baseobj.js";
 const ped_uv = [0.125, 0.043478260869565216];
 export class ped extends baseobj {
     constructor(props) {
-        super(Object.assign(Object.assign({ name: 'a pedestrian' }, props), { type: 'ped' }));
-        this.rz = 0;
+        super(Object.assign(Object.assign({ name: 'a pedestrian' }, props), { _type: 'ped' }));
         this.remap = -1;
         this.timer = 0;
         this.row = 0;
@@ -15,7 +14,6 @@ export class ped extends baseobj {
         this.walking = false;
         this.running = false;
         this.idling = false;
-        console.log(' ply after super ', this.props);
         this.size = [33, 33];
     }
     _delete() {
@@ -24,6 +22,7 @@ export class ped extends baseobj {
         (_a = this.sprite) === null || _a === void 0 ? void 0 : _a.dispose();
     }
     _create() {
+        console.log(' ped create ');
         if (this.remap == -1)
             this.remap = Math.floor(Math.random() * 53);
         new sprite({
@@ -32,12 +31,14 @@ export class ped extends baseobj {
             blur: `sty/ped/blur.png`,
             repeat: ped_uv,
             shadowing: true,
+            transparent: true,
             z: 2
         });
         this.sprite.create();
     }
     _step() {
         var _a;
+        console.log('ped step is active', this.active);
         this.timer += renderer.delta;
         if ((this.walking || this.running) && this.timer >= (this.walking ? 0.12 : 0.09)) {
             this.column = (this.column < 7) ? this.column + 1 : 0;

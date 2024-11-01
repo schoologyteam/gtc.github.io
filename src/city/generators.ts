@@ -1,6 +1,7 @@
-import gtasmr from "../gtasmr";
-import lod from "../lod";
-import baseobj from "../objs/baseobj";
+import gtasmr from "../gtasmr.js";
+import lod from "../lod.js";
+import baseobj from "../objs/baseobj.js";
+import staging_area from "./staging.js";
 
 export namespace generators {
 
@@ -22,7 +23,7 @@ export namespace generators {
 		let y = data._wpos[0];
 		data._wpos[0] = axis ? y : x;
 		data._wpos[1] = axis ? x : y;
-		data.r = axis;
+		data._r = axis;
 		data._wpos[0] += w[0];
 		data._wpos[1] += w[1];
 	}
@@ -47,103 +48,62 @@ export namespace generators {
 
 		type faces = [string, string, string, string, string]
 
-		export const blueMetal: faces = [
-			'sty/metal/blue/340.bmp',
-			'sty/metal/blue/340.bmp',
-			'sty/metal/blue/340.bmp',
-			'sty/metal/blue/340.bmp',
-			'sty/metal/blue/340.bmp'];
+	}
 
-		const roofFunc = (block: propz, w: vec3, min: vec3, max: vec3) => {
-
-			const same = block as any;
-
-			if (w[2] == max[2]) {
-				same.faces![4] = 'sty/roofs/green/793.bmp';
-
-				if (w[0] == min[0] && w[1] == min[1]) { // lb
-					same.faces![4] = 'sty/roofs/green/784.bmp';
-					same.r = 3;
-				}
-				else if (w[0] == max[0] && w[1] == max[1]) { // rt
-					same.faces![4] = 'sty/roofs/green/784.bmp';
-					same.f = true;
-					same.r = 0;
-				}
-				else if (w[0] == min[0] && w[1] == max[1]) { // lt
-					same.faces![4] = 'sty/roofs/green/784.bmp';
-					same.r = 0;
-				}
-				else if (w[0] == max[0] && w[1] == min[1]) { // rb
-					same.faces![4] = 'sty/roofs/green/784.bmp';
-					same.r = 2;
-				}
-
-				else if (w[0] == min[0]) {
-					same.faces![4] = 'sty/roofs/green/790.bmp';
-					same.r = 1;
-				}
-				else if (w[1] == max[1]) {
-					same.faces![4] = 'sty/roofs/green/790.bmp';
-					same.f = true;
-					same.r = 2;
-				}
-				else if (w[0] == max[0]) {
-					same.faces![4] = 'sty/roofs/green/790.bmp';
-					same.r = 3;
-				}
-				else if (w[1] == min[1]) {
-					same.faces![4] = 'sty/roofs/green/790.bmp';
-					same.r = 0;
-				}
+	export function oneway(axis: axis, w: vec3, segs: number) {
+		let staging = new staging_area;
+		let seg = 0;
+		for (; seg < segs; seg++) {
+			let road: propz = {
+				_type: 'floor',
+				_wpos: [w[0], seg + w[1], w[2]],
+				_r: 3,
+				extra: {}
+			};
+			if (!seg || seg == segs - 1) {
+				road.extra.sty = 'sty/roads/grey/687.bmp';
+				//road.sprite = Sprites.ROADS.SINGLE_OPEN;
+				if (!seg)
+					road._r! += 1;
+				else if (seg == segs - 1)
+					road._r! -= 1;
 			}
+			staging.add_data(road);
 		}
+		if (axis == 0)
+			staging.ccw(1);
+		staging.replace();
+	}
 
-		export function type1(
-			min: [number, number, number],
-			max: [number, number, number],
-		) {
-
-			const func = (w: [number, number, number]) => {
-
-				let bmp = 'sty/metal/blue/340.bmp';
-
-				let block: propz = {
-					// type: 'Block',
-					type: 'block',
-					_wpos: w
+	export function twolane(axis: axis, w: vec3, segs: number) {
+		let staging = new staging_area;
+		const lanes = 2;
+		let seg = 0;
+		for (; seg < segs; seg++) {
+			let lane = 0;
+			for (; lane < lanes; lane++) {
+				let road: propz = {
+					_type: 'floor',
+					_wpos: [seg + w[0], lane + w[1], 0],
+					extra: {}
 				};
-
-				let ignore = block as any;
-
-				ignore.faces = [];
-
-				if (
-					w[0] > min[0] &&
-					w[0] < max[0] &&
-					w[1] > min[1] &&
-					w[1] < max[1] &&
-					w[2] < max[2]
-				)
-					return;
-
-				roofFunc(ignore, w, min, max);
-
-				if (w[0] == min[0])
-					ignore.faces[1] = bmp;
-				if (w[1] == max[1])
-					ignore.faces[2] = bmp;
-				if (w[0] == max[0])
-					ignore.faces[0] = bmp;
-				if (w[1] == min[1])
-					ignore.faces[3] = bmp;
-
-				deliver(ignore);
+				road._r = !lane ? Math.PI / 1 : 0;
+				road.extra.sty = 'sty/roads/grey/691.bmp'; // side line
+				if (!seg || seg == segs - 1) {
+					road.extra.sty = 'sty/roads/grey/695.bmp'; // side line fade
+					if (!seg && !lane || seg == segs - 1 && lane)
+						road.extra.flip = true;
+				}
+				else if (seg == 1 && lane == lanes - 1 || seg == segs - 2 && !lane) {
+					road.extra.sty = 'sty/roads/grey/676.bmp'; // sideStopLine
+					road.extra.flip = true;
+				}
+				staging.add_data(road);
 			}
-
-			loopvec3(min, max, func);
 		}
-
+		if (axis == 1)
+			staging.ccw(1);
+		staging.replace();
 	}
 
 }

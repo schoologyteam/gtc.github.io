@@ -2,7 +2,8 @@ import aabb2 from "./aabb2.js";
 
 export interface Pt { x: number; y: number };
 
-type same = vec2 | vec3;
+type indiscriminate = vec2 | vec3;
+type same = indiscriminate;
 
 class pts {
 	static pt(a: vec2): Pt {
@@ -19,7 +20,7 @@ class pts {
 		}
 	}
 
-	static clone(zx: vec2): vec2 {
+	static copy(zx: vec2 | vec3): vec2 {
 		return [zx[0], zx[1]];
 	}
 
@@ -120,12 +121,16 @@ class pts {
 		return [Math.abs(a[0]), Math.abs(a[1])];
 	}
 
-	static min(a: vec2, b: vec2): vec2 {
+	static min(a: indiscriminate, b: indiscriminate): vec2 {
 		return [Math.min(a[0], b[0]), Math.min(a[1], b[1])];
 	}
 
-	static max(a: vec2, b: vec2): vec2 {
+	static max(a: indiscriminate, b: indiscriminate): vec2 {
 		return [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+	}
+
+	static _32(a: vec3): vec2 {
+		return [a[0], a[1]];
 	}
 
 	static together(zx: vec2): number {
@@ -133,7 +138,7 @@ class pts {
 	}
 
 	static uneven(a: vec2, n: number = -1): vec2 {
-		let b = pts.clone(a);
+		let b = pts.copy(a);
 		if (b[0] % 2 != 1) {
 			b[0] += n;
 		}
@@ -143,7 +148,7 @@ class pts {
 		return b;
 	}
 	static even(a: vec2, n: number = -1): vec2 {
-		let b = pts.clone(a);
+		let b = pts.copy(a);
 		if (b[0] % 2 != 0) {
 			b[0] += n;
 		}

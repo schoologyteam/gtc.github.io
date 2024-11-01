@@ -12,7 +12,7 @@ class pts {
             }
         }
     }
-    static clone(zx) {
+    static copy(zx) {
         return [zx[0], zx[1]];
     }
     static make(n, m) {
@@ -96,11 +96,14 @@ class pts {
     static max(a, b) {
         return [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
     }
+    static _32(a) {
+        return [a[0], a[1]];
+    }
     static together(zx) {
         return zx[0] + zx[1];
     }
     static uneven(a, n = -1) {
-        let b = pts.clone(a);
+        let b = pts.copy(a);
         if (b[0] % 2 != 1) {
             b[0] += n;
         }
@@ -110,7 +113,7 @@ class pts {
         return b;
     }
     static even(a, n = -1) {
-        let b = pts.clone(a);
+        let b = pts.copy(a);
         if (b[0] % 2 != 0) {
             b[0] += n;
         }

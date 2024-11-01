@@ -69,7 +69,7 @@ export namespace gtasmr {
 		console.log(' gtasmr start ');
 		gview = view.make();
 		ply = player.instance();
-		gview.add(ply);
+		lod.add(ply);
 		city.load_sounds();
 		city.creation();
 		ghooks.start();

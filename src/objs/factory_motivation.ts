@@ -1,17 +1,18 @@
 
-import objects from "./misc";
+import baseobj from "./baseobj.js";
+import objects from "./misc.js";
 
 // why the gta kill style factory:
 
 // reason number one, objects come in as data from the network
 // reason number two, it is friendlier to use type names than import a large number of class files
 
-export function objfactory(type: typez, props: propz) {
-    let obj;
-    switch (type) {
+export function objfactory(props: propz): baseobj | undefined {
+    let obj: baseobj | undefined;
+    switch (props._type) {
         case 'dud':
         case 'direct':
-            console.warn(' dud or direct construction information passed to factory ');
+            console.warn(' unset type passed to factory ');
             break;
         case 'floor':
             obj = new objects.floor(props);
@@ -22,3 +23,5 @@ export function objfactory(type: typez, props: propz) {
     }
     return obj;
 }
+
+export default objfactory;

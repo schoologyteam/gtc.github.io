@@ -4,8 +4,9 @@ var objects;
 (function (objects) {
     class floor extends baseobj {
         constructor(props) {
-            super(Object.assign(Object.assign({ name: 'a floor' }, props), { type: 'floor' }));
+            super(Object.assign(Object.assign({ name: 'a floor' }, props), { _type: 'floor' }));
             this.sty = 'sty/floors/mixed/78.bmp';
+            this.sprops = Object.assign(Object.assign({}, props.extra), { bind: this });
             this.size = [64, 64];
         }
         _delete() {
@@ -13,17 +14,16 @@ var objects;
             (_a = this.sprite) === null || _a === void 0 ? void 0 : _a.dispose();
         }
         _create() {
-            let sprops = Object.assign(Object.assign({}, this.sprops), { bind: this });
+            this.sprops = Object.assign(Object.assign({}, this.sprops), { bind: this });
             // sprops.color = gtasmr.sample(['red', 'salmon', 'pink', 'cyan'])
-            new sprite(sprops);
-            //this.sprite!.rposoffset = pts.mult([0.5, 0], lod.size);
+            new sprite(this.sprops);
             this.sprite.create();
         }
     }
     objects.floor = floor;
     class block extends baseobj {
         constructor(props) {
-            super(Object.assign(Object.assign({}, props), { type: 'block' }));
+            super(Object.assign(Object.assign({}, props), { _type: 'block' }));
             this.size = [64, 64];
         }
         _delete() {

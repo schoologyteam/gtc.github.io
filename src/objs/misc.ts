@@ -19,18 +19,18 @@ namespace objects {
 			super({
 				name: 'a floor',
 				...props,
-				type: 'floor',
+				_type: 'floor',
 			});
+			this.sprops = { ...props.extra, bind: this } as sprite.parameters;
 			this.size = [64, 64];
 		}
 		protected override _delete() {
 			this.sprite?.dispose();
 		}
 		protected override _create() {
-			let sprops = { ...this.sprops, bind: this } as sprite.parameters;
+			this.sprops = { ...this.sprops, bind: this } as sprite.parameters;
 			// sprops.color = gtasmr.sample(['red', 'salmon', 'pink', 'cyan'])
-			new sprite(sprops);
-			//this.sprite!.rposoffset = pts.mult([0.5, 0], lod.size);
+			new sprite(this.sprops);
 			this.sprite!.create();
 		}
 	}
@@ -45,7 +45,7 @@ namespace objects {
 		) {
 			super({
 				...props,
-				type: 'block',
+				_type: 'block',
 			});
 			this.size = [64, 64];
 		}

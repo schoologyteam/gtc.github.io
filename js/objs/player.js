@@ -6,12 +6,19 @@ import ped from "./ped.js";
 const ped_uv = [0.125, 0.043478260869565216];
 export class player extends ped {
     static instance() {
-        let ply = new player({ type: 'ply', _wpos: [0, 0, 0] });
+        let ply = new player({
+            _type: 'dud',
+            _wpos: [0, 0, 0],
+            name: 'the player',
+        });
         return ply;
     }
     constructor(props) {
-        super(Object.assign(Object.assign({ name: 'a player' }, props), { type: 'ply' }));
+        super(Object.assign({ name: 'a player' }, props));
         this.stopped = false;
+        // Because of the poor type system, type is now ped
+        this.props._type = 'ply';
+        console.log(' ply after super ', this.props);
         this.remap = 52;
     }
     _step() {
@@ -33,11 +40,11 @@ export class player extends ped {
                 this.walking = true;
                 this.row = 0;
             }
-            this.rz = -Math.atan2(this.rpos[0] - gtasmr.gview.mrpos[0], this.rpos[1] - gtasmr.gview.mrpos[1]);
+            this.r = -Math.atan2(this.rpos[0] - gtasmr.gview.mrpos[0], this.rpos[1] - gtasmr.gview.mrpos[1]);
             velocity *= renderer.delta;
             this.wpos = pts.add(this.wpos, [
-                velocity * Math.sin(-this.rz),
-                velocity * Math.cos(-this.rz)
+                velocity * Math.sin(-this.r),
+                velocity * Math.cos(-this.r)
             ]);
         }
         super._step();

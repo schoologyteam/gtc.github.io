@@ -1,4 +1,5 @@
 import city from "./city.js";
+import lod from "./lod.js";
 import ghooks from "./ghooks.js";
 import renderer from "./renderer.js";
 import view from "./view.js";
@@ -69,7 +70,7 @@ export var gtasmr;
         console.log(' gtasmr start ');
         gtasmr.gview = view.make();
         gtasmr.ply = player.instance();
-        gtasmr.gview.add(gtasmr.ply);
+        lod.add(gtasmr.ply);
         city.load_sounds();
         city.creation();
         ghooks.start();

@@ -10,6 +10,13 @@ export class sprite {
         this.sprops = sprops;
         this.rposoffset = [0, 0];
         this.sprops.bind.sprite = this;
+        this.bind = this.sprops.bind;
+        /*
+        todo just do this.sprops = {
+            default settings,
+            ... overwrite with incoming props
+        }
+        */
         this.sprops.offset = this.sprops.offset || [0, 0];
         this.sprops.repeat = this.sprops.repeat || [1, 1];
         this.sprops.center = this.sprops.center || [0, 1];
@@ -31,9 +38,10 @@ export class sprite {
         if (!this.mesh)
             return;
         this.douv();
-        let pos = pts.add(this.sprops.bind.rpos, this.rposoffset);
-        this.mesh.rotation.z = this.sprops.bind.rz;
-        this.mesh.position.fromArray([...pos, this.sprops.z]);
+        let pos = pts.add(this.bind.rpos, this.rposoffset);
+        this.mesh.rotation.z = this.bind.r;
+        this.mesh.scale.x = this.sprops.flip ? -1 : 1;
+        this.mesh.position.fromArray([...pos, this.bind.z + this.sprops.z]);
         this.mesh.updateMatrix();
         (_a = this.shadow) === null || _a === void 0 ? void 0 : _a.step();
     }
@@ -45,13 +53,13 @@ export class sprite {
         (_d = this.shadow) === null || _d === void 0 ? void 0 : _d.end();
     }
     create() {
-        let pt = pts.clone(this.sprops.bind.size);
+        let pt = pts.copy(this.bind.size);
         pts.mult(pt, lod.size);
         this.geometry = new THREE.PlaneGeometry(pt[0], pt[1]);
         this.material = MySpriteMaterial({
             map: renderer.load_texture(this.sprops.sty),
             color: this.sprops.color || 'white',
-            transparent: true,
+            transparent: this.sprops.transparent,
             shininess: 0
         }, {
             matrix: this.matrix,
@@ -85,6 +93,7 @@ export class shadow {
         this.mesh = new THREE.Mesh(this.sprite.geometry, this.material);
         this.mesh.frustumCulled = false;
         this.mesh.matrixAutoUpdate = false;
+        this.step();
         renderer.scene.add(this.mesh);
     }
     end() {
@@ -95,7 +104,7 @@ export class shadow {
     step() {
         var _a;
         let pos = pts.add(this.sprops.bind.rpos, this.sprite.rposoffset);
-        this.mesh.rotation.z = this.sprops.bind.rz;
+        this.mesh.rotation.z = this.sprops.bind.r;
         (_a = this.mesh) === null || _a === void 0 ? void 0 : _a.position.fromArray([...pts.add(pos, this.sprops.shadowLength), this.sprops.z - 0.5]);
         this.mesh.updateMatrix();
     }

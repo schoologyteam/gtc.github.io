@@ -1,83 +1,50 @@
 // For making vertical ~> horizontal
-/*
+import aabb2 from "../dep/aabb2.js";
+import pts from "../dep/pts.js";
+import lod from "../lod.js";
+import { objfactory } from "../objs/factory_motivation.js";
+// Horrible code from gta kill
 class staging_area {
-
-    min: [number, number, number]
-    max: [number, number, number]
-
-    datas: oprops[] = []
-
     constructor() {
-
+        this.datas = [];
     }
-
-    addData(data: oprops) {
+    add_data(data) {
         this.datas.push(data);
     }
-
-    addDatas(datas: oprops[]) {
+    add_datas(datas) {
         this.datas = this.datas.concat(datas);
     }
-
-    deliverReplace() {
-        //for (let data of this.datas)
-        //	Datas.replaceDeliver(data);
+    replace() {
+        console.log('staging area replace', this.datas);
+        for (const data of this.datas)
+            lod.add(objfactory(data));
     }
-
-    deliverKeep() {
+    keep() {
         //for (let data of this.datas)
-        //	Datas.deliver(data);
+        //Datas.deliver(data);
     }
-
-    private findExtents() {
-        let set = false;
-
+    find_extents() {
+        let first = true;
+        let aabb;
         for (let data of this.datas) {
-
-            // aabb
-            if (!set) {
-                this.min = [data.x, data.y, data.z];
-                this.max = [data.x, data.y, data.z];
-                set = true;
-            }
-
-            this.min[0] = Math.min(data.x, this.min[0]);
-            this.min[1] = Math.min(data.y, this.min[1]);
-            this.min[2] = Math.min(data.z, this.min[2]);
-            this.max[0] = Math.max(data.x, this.max[0]);
-            this.max[1] = Math.max(data.y, this.max[1]);
-            this.max[2] = Math.max(data.z, this.max[2]);
+            if (!aabb)
+                aabb = new aabb2(pts._32(data._wpos), pts._32(data._wpos));
+            aabb.extend(data._wpos);
         }
     }
-
-    ccw(n: 1 | 2 | 3 = 1) {
-        
-        this.findExtents();
-        
+    ccw(n = 1) {
+        this.find_extents();
         for (let data of this.datas) {
-            let p = rotate(
-                this.min[0],
-                this.min[1],
-                data.x,
-                data.y,
-                n * 90);
-
+            let p = rotate(this.aabb.min[0], this.aabb.min[1], data._wpos[0], data._wpos[1], n * 90);
             //console.log('rotate is', p[0], p[1]);
-            
-            data.r! += n;
-            data.x = p[0];
-            data.y = p[1] + (this.max[0] - this.min[0]);
+            data._r += n;
+            data._wpos[0] = p[0];
+            data._wpos[1] = p[1] + (this.aabb.max[0] - this.aabb.min[0]);
         }
     }
 }
-
 function rotate(cx, cy, x, y, angle) {
-    var radians = (Math.PI / 180) * angle,
-        cos = Math.cos(radians),
-        sin = Math.sin(radians),
-        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
-        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    var radians = (Math.PI / 180) * angle, cos = Math.cos(radians), sin = Math.sin(radians), nx = (cos * (x - cx)) + (sin * (y - cy)) + cx, ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
     return [Math.round(nx), Math.round(ny)];
 }
-*/
-//export default staging_area;
+export default staging_area;

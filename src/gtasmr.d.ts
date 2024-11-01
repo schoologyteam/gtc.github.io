@@ -4,19 +4,20 @@ declare type vec2 = [number, number];
 
 declare var THREE: any
 
-// use the type dud or direct for direct instantiations
+// use type direct for direct instantiations
 // the type system will known what to do
 
 type typez = 'direct' | 'dud' | 'floor' | 'block' | 'ped' | 'ply'
 
 interface objprops {
-	type: typez
+	_type: typez
 	_wpos: vec3,
+	_r?: number,
 	name?: string,
-	r?: number
+	extra?: any
 }
 
-declare class baseobj {constructor(objprops)}
+declare class baseobj {z; constructor(objprops)}
 
 type bobj = baseobj
 type propz = objprops
