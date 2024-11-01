@@ -9,11 +9,15 @@ const ped_uv = [0.125, 0.043478260869565216] as vec2;
 export class player extends ped {
 	stopped = false;
 	static instance() {
-		let ply = new player;
+		let ply = new player({ type: 'ply', _wpos: [0, 0, 0] });
 		return ply;
 	}
-	constructor() {
-		super();
+	constructor(props: propz) {
+		super({
+			name: 'a player',
+			...props,
+			type: 'ply',
+		});
 		this.remap = 52;
 	}
 	protected _step() {

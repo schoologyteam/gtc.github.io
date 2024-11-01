@@ -4,7 +4,7 @@ var objects;
 (function (objects) {
     class floor extends baseobj {
         constructor(props) {
-            super({ name: 'a floor', fakewpos: [0, 0, 0] });
+            super(Object.assign(Object.assign({ name: 'a floor' }, props), { type: 'floor' }));
             this.sty = 'sty/floors/mixed/78.bmp';
             this.size = [64, 64];
         }
@@ -22,9 +22,8 @@ var objects;
     }
     objects.floor = floor;
     class block extends baseobj {
-        constructor(sprops) {
-            super({ name: 'a block', fakewpos: [0] });
-            this.sprops = sprops;
+        constructor(props) {
+            super(Object.assign(Object.assign({}, props), { type: 'block' }));
             this.size = [64, 64];
         }
         _delete() {

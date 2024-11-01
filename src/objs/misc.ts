@@ -16,7 +16,11 @@ namespace objects {
 		sprite?: sprite
 		sprops: sprite.parameters
 		constructor(props: propz) {
-			super({ name: 'a floor', fakewpos: [0, 0, 0] });
+			super({
+				name: 'a floor',
+				...props,
+				type: 'floor',
+			});
 			this.size = [64, 64];
 		}
 		protected override _delete() {
@@ -37,8 +41,12 @@ namespace objects {
 		geometry
 		mesh
 		constructor(
-			public sprops: sprite.parameters) {
-			super({ name: 'a block', fakewpos: [0] as unknown as vec3 });
+			props: propz
+		) {
+			super({
+				...props,
+				type: 'block',
+			});
 			this.size = [64, 64];
 		}
 		protected override _delete() {

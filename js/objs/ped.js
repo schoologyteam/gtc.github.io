@@ -5,8 +5,8 @@ import renderer from "../renderer.js";
 import baseobj from "./baseobj.js";
 const ped_uv = [0.125, 0.043478260869565216];
 export class ped extends baseobj {
-    constructor() {
-        super({ name: 'a pedestrian', fakewpos: [0, 0, 0] });
+    constructor(props) {
+        super(Object.assign(Object.assign({ name: 'a pedestrian' }, props), { type: 'ped' }));
         this.rz = 0;
         this.remap = -1;
         this.timer = 0;
@@ -15,6 +15,7 @@ export class ped extends baseobj {
         this.walking = false;
         this.running = false;
         this.idling = false;
+        console.log(' ply after super ', this.props);
         this.size = [33, 33];
     }
     _delete() {

@@ -48,7 +48,7 @@ export class view {
         this.mrpos = pts.add(this.rpos, mouse);
         // now..
         if (app.button(2) >= 1) {
-            let ping = new ped;
+            let ping = new ped({ type: 'ped', _wpos: [0, 0, 0] });
             ping.wpos = lod.unproject(this.mrpos);
             this.add(ping);
         }

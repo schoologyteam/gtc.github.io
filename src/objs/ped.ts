@@ -16,8 +16,14 @@ export class ped extends baseobj {
 	running = false
 	idling = false
 	sprite?: sprite
-	constructor() {
-		super({ name: 'a pedestrian', fakewpos: [0, 0, 0] });
+	constructor(props: propz) {
+		super({
+			name: 'a pedestrian',
+			...props,
+			type: 'ped',
+		});
+		console.log(' ply after super ', this.props);
+		
 		this.size = [33, 33];
 	}
 	protected override _delete() {

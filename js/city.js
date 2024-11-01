@@ -41,7 +41,11 @@ export var city;
     function creation() {
         const pavement = (pos) => {
             let sprops = Object.assign({}, pavement_mixed);
-            let floor = new objects.floor({ name: 'pavement', fakewpos: pos });
+            let floor = new objects.floor({
+                name: 'a pavement',
+                type: 'dud',
+                _wpos: pos
+            });
             floor.sprops = sprops;
             floor.wpos = pos;
             floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);

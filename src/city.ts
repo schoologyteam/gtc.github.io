@@ -39,7 +39,7 @@ export namespace city {
 	const make_room = (pos: vec2) => {
 		let obj = new lod.obj;
 		let properties = { ...block_tenement, bind: obj } as sprite.parameters;
-		properties.mask = 'sty/walls/casual/concaveMask.bmp'
+		properties.mask = 'sty/walls/casual/concaveMask.bmp';
 		// properties.offset = [pavement_uv * 1, 0];
 		new sprite(properties);
 		obj.wpos = pts.add(pos, [0.5, 0.5]);
@@ -52,9 +52,12 @@ export namespace city {
 
 		const pavement = (pos: vec2) => {
 			let sprops = { ...pavement_mixed } as sprite.parameters;
-			let floor = new objects.floor({ name: 'pavement', fakewpos: pos as unknown as vec3 });
+			let floor = new objects.floor({
+				name: 'a pavement',
+				type: 'dud',
+				_wpos: pos as unknown as vec3
+			});
 			floor.sprops = sprops;
-
 			floor.wpos = pos;
 			floor.rz = Math.PI / 2 * Math.floor(Math.random() * 4);
 			floor.step();

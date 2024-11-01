@@ -14,13 +14,13 @@ export var generators;
     // todo throw into staging
     function invert(data, axis, w) {
         // temp
-        let x = data.fakewpos[0];
-        let y = data.fakewpos[0];
-        data.fakewpos[0] = axis ? y : x;
-        data.fakewpos[1] = axis ? x : y;
+        let x = data._wpos[0];
+        let y = data._wpos[0];
+        data._wpos[0] = axis ? y : x;
+        data._wpos[1] = axis ? x : y;
         data.r = axis;
-        data.fakewpos[0] += w[0];
-        data.fakewpos[1] += w[1];
+        data._wpos[0] += w[0];
+        data._wpos[1] += w[1];
     }
     generators.invert = invert;
     function loopvec3(min, max, func) {
@@ -90,8 +90,8 @@ export var generators;
                 let bmp = 'sty/metal/blue/340.bmp';
                 let block = {
                     // type: 'Block',
-                    name: 'block',
-                    fakewpos: w
+                    type: 'block',
+                    _wpos: w
                 };
                 let ignore = block;
                 ignore.faces = [];

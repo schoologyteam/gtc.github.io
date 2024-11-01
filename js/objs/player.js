@@ -6,11 +6,11 @@ import ped from "./ped.js";
 const ped_uv = [0.125, 0.043478260869565216];
 export class player extends ped {
     static instance() {
-        let ply = new player;
+        let ply = new player({ type: 'ply', _wpos: [0, 0, 0] });
         return ply;
     }
-    constructor() {
-        super();
+    constructor(props) {
+        super(Object.assign(Object.assign({ name: 'a player' }, props), { type: 'ply' }));
         this.stopped = false;
         this.remap = 52;
     }

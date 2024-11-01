@@ -3,7 +3,7 @@ export class baseobj extends lod.obj {
     constructor(props) {
         super(undefined);
         this.props = props;
-        this.wpos = props.fakewpos;
+        this.wpos = props._wpos;
     }
     _delete() {
     }
