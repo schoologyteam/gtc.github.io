@@ -38,7 +38,10 @@ export class ped extends baseobj {
     }
     _step() {
         var _a;
-        console.log('ped step is active', this.active);
+        if (!this.active)
+            console.warn('ped step when inactive', this.active);
+        if (!this.active)
+            return;
         this.timer += renderer.delta;
         if ((this.walking || this.running) && this.timer >= (this.walking ? 0.12 : 0.09)) {
             this.column = (this.column < 7) ? this.column + 1 : 0;

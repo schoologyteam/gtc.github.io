@@ -94,7 +94,7 @@ export class sprite {
 		this.material = MySpriteMaterial({
 			map: renderer.load_texture(this.sprops.sty),
 			color: this.sprops.color || 'white',
-			transparent: this.sprops.transparent,
+			transparent: !! this.sprops.transparent,
 			shininess: 0
 		}, {
 			matrix: this.matrix,

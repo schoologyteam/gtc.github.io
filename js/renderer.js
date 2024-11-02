@@ -68,6 +68,7 @@ var renderer;
         renderer_1.scenert = new THREE.Scene();
         // ambientLight = new THREE.AmbientLight(0x3a454f);
         renderer_1.ambientLight = new THREE.AmbientLight('white');
+        renderer_1.ambientLight.intensity = 2;
         renderer_1.directionalLight = new THREE.DirectionalLight(0x355886, 1.0);
         renderer_1.directionalLight.position.set(0, 0, 1);
         renderer_1.scene.add(renderer_1.directionalLight);

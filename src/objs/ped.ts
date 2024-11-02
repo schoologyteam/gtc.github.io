@@ -15,21 +15,21 @@ export class ped extends baseobj {
 	running = false
 	idling = false
 	sprite?: sprite
-constructor(props: propz) {
-	super({
-		name: 'a pedestrian',
-		...props,
-		_type: 'ped',
-	});
-	this.size = [33, 33];
-}
+	constructor(props: propz) {
+		super({
+			name: 'a pedestrian',
+			...props,
+			_type: 'ped',
+		});
+		this.size = [33, 33];
+	}
 	protected override _delete() {
 		console.log('delete ped');
 		this.sprite?.dispose();
 	}
 	protected override _create() {
 		console.log(' ped create ');
-		
+
 		if (this.remap == -1)
 			this.remap = Math.floor(Math.random() * 53);
 		new sprite({
@@ -44,8 +44,12 @@ constructor(props: propz) {
 		this.sprite!.create();
 	}
 	protected override _step() {
-		console.log('ped step is active', this.active);
-		
+		if (!this.active)
+			console.warn('ped step when inactive', this.active);
+
+		if (!this.active)
+			return;
+
 		this.timer += renderer.delta;
 		if ((this.walking || this.running) && this.timer >= (this.walking ? 0.12 : 0.09)) {
 			this.column = (this.column < 7) ? this.column + 1 : 0;
