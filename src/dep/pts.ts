@@ -20,8 +20,8 @@ class pts {
 		}
 	}
 
-	static copy(zx: vec2 | vec3): vec2 {
-		return [zx[0], zx[1]];
+	static copy(a: indiscriminate): vec2 {
+		return [a[0], a[1]];
 	}
 
 	static make(n: number, m: number): vec2 {

@@ -3,6 +3,7 @@ import sprite from "../sprite.js";
 import lod from "../lod.js";
 import renderer from "../renderer.js";
 import baseobj from "./baseobj.js";
+import glob from "../dep/glob.js";
 const ped_uv = [0.125, 0.043478260869565216];
 export class ped extends baseobj {
     constructor(props) {
@@ -22,7 +23,7 @@ export class ped extends baseobj {
         (_a = this.sprite) === null || _a === void 0 ? void 0 : _a.dispose();
     }
     _create() {
-        console.log(' ped create ');
+        //console.log(' ped create ');
         if (this.remap == -1)
             this.remap = Math.floor(Math.random() * 53);
         new sprite({
@@ -38,8 +39,10 @@ export class ped extends baseobj {
     }
     _step() {
         var _a;
-        if (!this.active)
-            console.warn('ped step when inactive', this.active);
+        if (!this.active) {
+            console.error('ped step when inactive', this);
+            glob.killswitch = true;
+        }
         if (!this.active)
             return;
         this.timer += renderer.delta;

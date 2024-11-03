@@ -1,3 +1,4 @@
+import glob from "../dep/glob.js";
 import pts from "../dep/pts.js";
 import lod from "../lod.js";
 export class baseobj extends lod.obj {
@@ -17,6 +18,10 @@ export class baseobj extends lod.obj {
         console.warn(' baseobj empty create ');
     }
     _step() {
+        if (!this.active) {
+            console.error(' baseobj step when inactive ', this);
+            glob.killswitch = true;
+        }
         super._step();
     }
 }

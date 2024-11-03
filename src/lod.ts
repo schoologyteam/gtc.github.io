@@ -9,7 +9,7 @@ import toggle from "./dep/toggle.js";
 export namespace numbers {
 	export type tally = [active: number, total: number]
 
-	export var sectors: tally = [0, 0]
+	export var chunks: tally = [0, 0]
 	export var sprites: tally = [0, 0]
 	export var objs: tally = [0, 0]
 
@@ -26,7 +26,7 @@ namespace lod {
 
 	const fog_of_war = false;
 
-	const grid_crawl_makes_sectors = true;
+	const grid_crawl_makes_chunks = true;
 
 	export var gworld: world;
 	export var ggrid: grid;
@@ -117,7 +117,7 @@ namespace lod {
 			this.group = new THREE.Group;
 			this.group.frustumCulled = false;
 			this.group.matrixAutoUpdate = false;
-			numbers.sectors[1]++;
+			numbers.chunks[1]++;
 			world.arrays[this.big[1]][this.big[0]] = this;
 			//console.log('sector');
 
@@ -125,12 +125,18 @@ namespace lod {
 
 		}
 		add(obj: obj) {
-			let i = this.objs.indexOf(obj);
-			if (i == -1) {
+			if (!this.objs.includes(obj)) {
 				this.objs.push(obj);
 				obj.chunk = this;
-				if (this.active && !obj.active)
+				if (this.active)
 					obj.show();
+			}
+		}
+		remove(obj: obj): boolean | undefined {
+			let i = this.objs.indexOf(obj);
+			if (i > -1) {
+				obj.chunk = null;
+				return !!this.objs.splice(i, 1).length;
 			}
 		}
 		stacked(wpos: vec2) {
@@ -140,21 +146,16 @@ namespace lod {
 					stack.push(obj);
 			return stack;
 		}
-		remove(obj: obj): boolean | undefined {
-			let i = this.objs.indexOf(obj);
-			if (i > -1) {
-				obj.chunk = null;
-				return !!this.objs.splice(i, 1).length;
-			}
-		}
+		
 		static swap(obj: obj) {
 			// Call me whenever you move
-			let oldSector = obj.chunk!;
-			let newSector = oldSector.world.at(lod.world.big(pts.round(obj.wpos)));
-			if (oldSector != newSector) {
-				oldSector.remove(obj);
-				newSector.add(obj);
-				if (!newSector.active)
+			let oldChunk = obj.chunk!;
+			let newChunk = oldChunk.world.atwpos(/*pts.round(*/obj.wpos/*)*/);
+			// the pts.round causes an impossible to find bug
+			if (oldChunk != newChunk) {
+				oldChunk.remove(obj);
+				newChunk.add(obj);
+				if (!newChunk.active)
 					obj.hide();
 			}
 		}
@@ -166,8 +167,8 @@ namespace lod {
 		show() {
 			if (this.on())
 				return;
-			numbers.sectors[0]++;
-			for (let obj of this.objs)
+			numbers.chunks[0]++;
+			for (const obj of this.objs)
 				obj.show();
 			ren.scene.add(this.group);
 			hooks.call('sectorShow', this);
@@ -175,7 +176,7 @@ namespace lod {
 		hide() {
 			if (this.off())
 				return;
-			numbers.sectors[0]--;
+			numbers.chunks[0]--;
 			for (let obj of this.objs)
 				obj.hide();
 			ren.scene.remove(this.group);
@@ -219,17 +220,16 @@ namespace lod {
 			for (let y = -this.spread; y < this.spread + 1; y++) {
 				for (let x = -this.spread; x < this.spread + 1; x++) {
 					let pos = pts.add(this.big, [x, y]);
-					let sector = grid_crawl_makes_sectors ? gworld.at(pos) : gworld.lookup(pos);
-					if (!sector)
+					let chunk = grid_crawl_makes_chunks ? gworld.at(pos) : gworld.lookup(pos);
+					if (!chunk)
 						continue;
-					if (!sector.active) {
-						this.shown.push(sector);
-						sector.show();
-						console.log(' show ');
-
-						// todo why step
+					if (!chunk.active) {
+						this.shown.push(chunk);//
+						chunk.show();
+						// console.log(' show ');
+						// todo why
 						// for (let obj of sector.objs)
-							// obj.step();
+						// obj.step();
 					}
 				}
 			}
@@ -239,33 +239,33 @@ namespace lod {
 			this.visibleObjs = [];
 			let i = this.shown.length;
 			while (i--) {
-				let sector: chunk;
-				sector = this.shown[i];
-				if (sector.dist() > this.outside) {
-					sector.hide();
+				let chunk: chunk;
+				chunk = this.shown[i];
+				if (chunk.dist() > this.outside) {
+					chunk.hide();
 					this.shown.splice(i, 1);
 				}
 				else {
-					sector.tick();
-					this.visibleObjs = this.visibleObjs.concat(sector.objs);
+					chunk.tick();
+					this.visibleObjs = this.visibleObjs.concat(chunk.objs);
 				}
 
 				if (fog_of_war) {
-					if (sector.dist() == this.outside) {
+					if (chunk.dist() == this.outside) {
 						//console.log('brim-chunk');
-						sector.fog_of_war = true;
+						chunk.fog_of_war = true;
 						//sector.color = '#555555';
 					}
 					else {
-						sector.fog_of_war = false;
+						chunk.fog_of_war = false;
 						//sector.color = '#ffffff';
 					}
 				}
 			}
 		}
 		ticks() {
-			for (const chunk of this.shown)
-				for (let obj of chunk.objs)
+			for (const chunk of this.shown) 
+				for (const obj of chunk.objs)
 					obj.step();
 		}
 	}
@@ -275,6 +275,7 @@ namespace lod {
 	};
 
 	export class obj extends toggle {
+		static ids = 0
 		id = -1
 		wpos: vec2 = [0, 0]
 		rpos: vec2 = [0, 0]
@@ -286,6 +287,7 @@ namespace lod {
 			public readonly counts: numbers.tally = numbers.objs) {
 			super();
 			this.counts[1]++;
+			this.id = obj.ids++;
 		}
 		finalize() {
 			// this.hide();
@@ -296,7 +298,7 @@ namespace lod {
 				return;
 			this.counts[0]++;
 			this.create();
-			this.step();
+			this.step(); // Cursor fixed the bug
 			//this.shape?.show();
 		}
 		hide() {

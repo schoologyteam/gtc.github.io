@@ -3,12 +3,12 @@
 		//"baseUrl": "./src2",
 		"sourceMap": false,
 		"module": "es6",
-		"target": "es2017",
+		"target": "es2016",
 		"esModuleInterop": true,
 		"jsx": "preserve",
 		"lib": [
 			"dom",
-			"es6"
+			"es2016"
 		],
 		"outDir": "js/",
 		"allowSyntheticDefaultImports": true,

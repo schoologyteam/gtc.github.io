@@ -1,10 +1,11 @@
 import app from "./app.js";
+import glob from "./dep/glob.js";
 import pts from "./dep/pts.js";
 import renderer from "./renderer.js";
 import lod, { numbers } from "./lod.js";
 import gtasmr from "./gtasmr.js";
 import ped from "./objs/ped.js";
-// the view manages everthng dont ask
+// the view manages camera movement and the lod
 const zeroes = [0, 0];
 export class view {
     static make() {
@@ -22,13 +23,15 @@ export class view {
         new lod.world(10);
     }
     tick() {
-        lod.ggrid.ticks();
         this.move();
         this.chase();
         this.mouse();
         this.stats();
+        if (glob.killswitch)
+            return;
         let wpos = lod.unproject(this.rpos);
         lod.gworld.update(wpos);
+        lod.ggrid.ticks();
     }
     mouse() {
         let mouse = app.mpos();
@@ -69,6 +72,7 @@ export class view {
         renderer.camera.scale.fromArray([this.zoom, this.zoom, this.zoom]);
     }
     chase() {
+        // todo check for null ply
         const time = renderer.delta;
         pts.mult([0, 0], 0);
         let ply = gtasmr.ply.rpos;
@@ -95,7 +99,7 @@ export class view {
         crunch += `view zoom: ${this.zoom.toPrecision(2)}<br />`;
         crunch += '<br />';
         //crunch += `world wpos: ${pts.to_string(this.pos)}<br /><br />`;
-        crunch += `sectors: ${numbers.sectors[0]} / ${numbers.sectors[1]}<br />`;
+        crunch += `sectors: ${numbers.chunks[0]} / ${numbers.chunks[1]}<br />`;
         crunch += `game objs: ${numbers.objs[0]} / ${numbers.objs[1]}<br />`;
         crunch += `sprites: ${numbers.sprites[0]} / ${numbers.sprites[1]}<br />`;
         crunch += `blocks: ${numbers.blocks[0]} / ${numbers.blocks[1]}<br />`;

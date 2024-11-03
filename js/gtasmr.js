@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import city from "./city.js";
 import lod from "./lod.js";
 import ghooks from "./ghooks.js";
@@ -64,19 +73,21 @@ export var gtasmr;
         window['GTA'] = gtasmr;
     }
     gtasmr.init = init;
-    async function start() {
-        if (started)
-            return;
-        console.log(' gtasmr start ');
-        gtasmr.gview = view.make();
-        gtasmr.ply = player.instance();
-        lod.add(gtasmr.ply);
-        city.load_sounds();
-        city.creation();
-        ghooks.start();
-        if (window.location.href.indexOf("#novar") != -1)
-            gtasmr.NO_VAR = false;
-        started = true;
+    function start() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (started)
+                return;
+            console.log(' gtasmr start ');
+            gtasmr.gview = view.make();
+            gtasmr.ply = player.instance();
+            lod.add(gtasmr.ply);
+            city.load_sounds();
+            city.creation();
+            ghooks.start();
+            if (window.location.href.indexOf("#novar") != -1)
+                gtasmr.NO_VAR = false;
+            started = true;
+        });
     }
     gtasmr.start = start;
     function step(delta) {

@@ -5,7 +5,7 @@ import ren from "./renderer.js";
 import toggle from "./dep/toggle.js";
 export var numbers;
 (function (numbers) {
-    numbers.sectors = [0, 0];
+    numbers.chunks = [0, 0];
     numbers.sprites = [0, 0];
     numbers.objs = [0, 0];
     numbers.blocks = [0, 0];
@@ -19,7 +19,7 @@ var lod;
     lod.size = 64;
     const chunk_coloration = false;
     const fog_of_war = false;
-    const grid_crawl_makes_sectors = true;
+    const grid_crawl_makes_chunks = true;
     lod.SectorSpan = 2;
     lod.stamp = 0; // used only by server slod
     function register() {
@@ -98,18 +98,24 @@ var lod;
             this.group = new THREE.Group;
             this.group.frustumCulled = false;
             this.group.matrixAutoUpdate = false;
-            numbers.sectors[1]++;
+            numbers.chunks[1]++;
             world.arrays[this.big[1]][this.big[0]] = this;
             //console.log('sector');
             hooks.call('sectorCreate', this);
         }
         add(obj) {
-            let i = this.objs.indexOf(obj);
-            if (i == -1) {
+            if (!this.objs.includes(obj)) {
                 this.objs.push(obj);
                 obj.chunk = this;
-                if (this.active && !obj.active)
+                if (this.active)
                     obj.show();
+            }
+        }
+        remove(obj) {
+            let i = this.objs.indexOf(obj);
+            if (i > -1) {
+                obj.chunk = null;
+                return !!this.objs.splice(i, 1).length;
             }
         }
         stacked(wpos) {
@@ -119,21 +125,15 @@ var lod;
                     stack.push(obj);
             return stack;
         }
-        remove(obj) {
-            let i = this.objs.indexOf(obj);
-            if (i > -1) {
-                obj.chunk = null;
-                return !!this.objs.splice(i, 1).length;
-            }
-        }
         static swap(obj) {
             // Call me whenever you move
-            let oldSector = obj.chunk;
-            let newSector = oldSector.world.at(lod.world.big(pts.round(obj.wpos)));
-            if (oldSector != newSector) {
-                oldSector.remove(obj);
-                newSector.add(obj);
-                if (!newSector.active)
+            let oldChunk = obj.chunk;
+            let newChunk = oldChunk.world.atwpos(/*pts.round(*/ obj.wpos /*)*/);
+            // the pts.round causes an impossible to find bug
+            if (oldChunk != newChunk) {
+                oldChunk.remove(obj);
+                newChunk.add(obj);
+                if (!newChunk.active)
                     obj.hide();
             }
         }
@@ -145,8 +145,8 @@ var lod;
         show() {
             if (this.on())
                 return;
-            numbers.sectors[0]++;
-            for (let obj of this.objs)
+            numbers.chunks[0]++;
+            for (const obj of this.objs)
                 obj.show();
             ren.scene.add(this.group);
             hooks.call('sectorShow', this);
@@ -154,7 +154,7 @@ var lod;
         hide() {
             if (this.off())
                 return;
-            numbers.sectors[0]--;
+            numbers.chunks[0]--;
             for (let obj of this.objs)
                 obj.hide();
             ren.scene.remove(this.group);
@@ -197,14 +197,14 @@ var lod;
             for (let y = -this.spread; y < this.spread + 1; y++) {
                 for (let x = -this.spread; x < this.spread + 1; x++) {
                     let pos = pts.add(this.big, [x, y]);
-                    let sector = grid_crawl_makes_sectors ? lod.gworld.at(pos) : lod.gworld.lookup(pos);
-                    if (!sector)
+                    let chunk = grid_crawl_makes_chunks ? lod.gworld.at(pos) : lod.gworld.lookup(pos);
+                    if (!chunk)
                         continue;
-                    if (!sector.active) {
-                        this.shown.push(sector);
-                        sector.show();
-                        console.log(' show ');
-                        // todo why step
+                    if (!chunk.active) {
+                        this.shown.push(chunk); //
+                        chunk.show();
+                        // console.log(' show ');
+                        // todo why
                         // for (let obj of sector.objs)
                         // obj.step();
                     }
@@ -216,24 +216,24 @@ var lod;
             this.visibleObjs = [];
             let i = this.shown.length;
             while (i--) {
-                let sector;
-                sector = this.shown[i];
-                if (sector.dist() > this.outside) {
-                    sector.hide();
+                let chunk;
+                chunk = this.shown[i];
+                if (chunk.dist() > this.outside) {
+                    chunk.hide();
                     this.shown.splice(i, 1);
                 }
                 else {
-                    sector.tick();
-                    this.visibleObjs = this.visibleObjs.concat(sector.objs);
+                    chunk.tick();
+                    this.visibleObjs = this.visibleObjs.concat(chunk.objs);
                 }
                 if (fog_of_war) {
-                    if (sector.dist() == this.outside) {
+                    if (chunk.dist() == this.outside) {
                         //console.log('brim-chunk');
-                        sector.fog_of_war = true;
+                        chunk.fog_of_war = true;
                         //sector.color = '#555555';
                     }
                     else {
-                        sector.fog_of_war = false;
+                        chunk.fog_of_war = false;
                         //sector.color = '#ffffff';
                     }
                 }
@@ -241,7 +241,7 @@ var lod;
         }
         ticks() {
             for (const chunk of this.shown)
-                for (let obj of chunk.objs)
+                for (const obj of chunk.objs)
                     obj.step();
         }
     }
@@ -257,6 +257,7 @@ var lod;
             this.size = [64, 64];
             this.expand = .5;
             this.counts[1]++;
+            this.id = obj.ids++;
         }
         finalize() {
             // this.hide();
@@ -267,7 +268,7 @@ var lod;
                 return;
             this.counts[0]++;
             this.create();
-            this.step();
+            this.step(); // Cursor fixed the bug
             //this.shape?.show();
         }
         hide() {
@@ -313,6 +314,7 @@ var lod;
             this.rebound();
         }
     }
+    obj.ids = 0;
     lod.obj = obj;
 })(lod || (lod = {}));
 export default lod;

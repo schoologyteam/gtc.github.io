@@ -1,3 +1,4 @@
+import glob from "../dep/glob.js";
 import pts from "../dep/pts.js";
 import lod from "../lod.js";
 
@@ -22,9 +23,12 @@ export class baseobj extends lod.obj {
 	}
 	protected override _create() {
 		console.warn(' baseobj empty create ');
-		
 	}
 	protected override _step() {
+		if (!this.active) {
+			console.error(' baseobj step when inactive ', this);
+			glob.killswitch = true;
+		}
 		super._step();
 	}
 }

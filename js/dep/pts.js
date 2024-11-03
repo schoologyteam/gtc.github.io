@@ -12,8 +12,8 @@ class pts {
             }
         }
     }
-    static copy(zx) {
-        return [zx[0], zx[1]];
+    static copy(a) {
+        return [a[0], a[1]];
     }
     static make(n, m) {
         return [n, m];

@@ -3,6 +3,7 @@ import sprite from "../sprite.js";
 import lod from "../lod.js";
 import renderer from "../renderer.js";
 import baseobj from "./baseobj.js";
+import glob from "../dep/glob.js";
 
 const ped_uv = [0.125, 0.043478260869565216] as vec2;
 
@@ -28,8 +29,7 @@ export class ped extends baseobj {
 		this.sprite?.dispose();
 	}
 	protected override _create() {
-		console.log(' ped create ');
-
+		//console.log(' ped create ');
 		if (this.remap == -1)
 			this.remap = Math.floor(Math.random() * 53);
 		new sprite({
@@ -44,8 +44,10 @@ export class ped extends baseobj {
 		this.sprite!.create();
 	}
 	protected override _step() {
-		if (!this.active)
-			console.warn('ped step when inactive', this.active);
+		if (!this.active) {
+			console.error('ped step when inactive', this);
+			glob.killswitch = true;
+		}
 
 		if (!this.active)
 			return;
