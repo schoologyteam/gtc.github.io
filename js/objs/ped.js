@@ -3,7 +3,6 @@ import sprite from "../sprite.js";
 import lod from "../lod.js";
 import renderer from "../renderer.js";
 import baseobj from "./baseobj.js";
-import glob from "../dep/glob.js";
 const ped_uv = [0.125, 0.043478260869565216];
 export class ped extends baseobj {
     constructor(props) {
@@ -39,12 +38,6 @@ export class ped extends baseobj {
     }
     _step() {
         var _a;
-        if (!this.active) {
-            console.error('ped step when inactive', this);
-            glob.killswitch = true;
-        }
-        if (!this.active)
-            return;
         this.timer += renderer.delta;
         if ((this.walking || this.running) && this.timer >= (this.walking ? 0.12 : 0.09)) {
             this.column = (this.column < 7) ? this.column + 1 : 0;

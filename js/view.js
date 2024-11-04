@@ -1,5 +1,4 @@
 import app from "./app.js";
-import glob from "./dep/glob.js";
 import pts from "./dep/pts.js";
 import renderer from "./renderer.js";
 import lod, { numbers } from "./lod.js";
@@ -27,8 +26,6 @@ export class view {
         this.chase();
         this.mouse();
         this.stats();
-        if (glob.killswitch)
-            return;
         let wpos = lod.unproject(this.rpos);
         lod.gworld.update(wpos);
         lod.ggrid.ticks();

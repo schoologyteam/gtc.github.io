@@ -1,3 +1,4 @@
+import lod from "../lod.js";
 import sprite from "../sprite.js";
 import baseobj from "./baseobj.js";
 var objects;
@@ -17,6 +18,7 @@ var objects;
             this.sprops = Object.assign(Object.assign({}, this.sprops), { bind: this });
             // sprops.color = gtasmr.sample(['red', 'salmon', 'pink', 'cyan'])
             new sprite(this.sprops);
+            this.sprite.rposoffset = lod.project([0.5, 0.5]);
             this.sprite.create();
         }
     }

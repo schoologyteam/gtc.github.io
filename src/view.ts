@@ -35,8 +35,6 @@ export class view {
 		this.chase();
 		this.mouse();
 		this.stats();
-		if (glob.killswitch)
-			return;
 		let wpos = lod.unproject(this.rpos);
 		lod.gworld.update(wpos);
 		lod.ggrid.ticks();

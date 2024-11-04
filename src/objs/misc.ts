@@ -31,6 +31,7 @@ namespace objects {
 			this.sprops = { ...this.sprops, bind: this } as sprite.parameters;
 			// sprops.color = gtasmr.sample(['red', 'salmon', 'pink', 'cyan'])
 			new sprite(this.sprops);
+			this.sprite!.rposoffset = lod.project([0.5, 0.5]);
 			this.sprite!.create();
 		}
 	}

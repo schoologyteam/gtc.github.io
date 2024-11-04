@@ -44,14 +44,6 @@ export class ped extends baseobj {
 		this.sprite!.create();
 	}
 	protected override _step() {
-		if (!this.active) {
-			console.error('ped step when inactive', this);
-			glob.killswitch = true;
-		}
-
-		if (!this.active)
-			return;
-
 		this.timer += renderer.delta;
 		if ((this.walking || this.running) && this.timer >= (this.walking ? 0.12 : 0.09)) {
 			this.column = (this.column < 7) ? this.column + 1 : 0;
