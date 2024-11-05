@@ -3,26 +3,15 @@ import pts from "./dep/pts.js";
 import renderer from "./renderer.js";
 ;
 ;
-const default_sprite_shadow_opacity = 0.7;
-const default_sprite_shadow_offset = [4, -4];
+const default_shadow_opacity = 0.7;
+const default_shadow_length = [4, -4];
 export class sprite {
     constructor(sprops) {
         this.sprops = sprops;
         this.rposoffset = [0, 0];
         this.sprops.bind.sprite = this;
         this.bind = this.sprops.bind;
-        /*
-        todo just do this.sprops = {
-            default settings,
-            ... overwrite with incoming props
-        }
-        */
-        this.sprops.offset = this.sprops.offset || [0, 0];
-        this.sprops.repeat = this.sprops.repeat || [1, 1];
-        this.sprops.center = this.sprops.center || [0, 1];
-        this.sprops.shade = this.sprops.shade || default_sprite_shadow_opacity;
-        this.sprops.shadowLength = this.sprops.shadowLength || default_sprite_shadow_offset;
-        this.sprops.z = this.sprops.z || 0;
+        this.sprops = Object.assign({ offset: [0, 0], repeat: [1, 1], center: [0, 1], shadow_opacity: default_shadow_opacity, shadow_length: default_shadow_length, z: 0 }, sprops);
         this.rotation = 0;
         this.matrix = new THREE.Matrix3;
     }
@@ -71,7 +60,7 @@ export class sprite {
         this.mesh.matrixAutoUpdate = false;
         this.step();
         renderer.scene.add(this.mesh);
-        if (this.sprops.shadowing)
+        if (this.sprops.make_shadow_sprite)
             this.shadow = new shadow(this);
     }
 }
@@ -85,7 +74,7 @@ export class shadow {
             map: renderer.load_texture(this.sprops.sty),
             color: 'black',
             transparent: true,
-            opacity: 0.7,
+            opacity: sprops.shadow_opacity,
         }, {
             matrix: this.sprite.matrix,
             // blurMap: (this.sprops.blur ? renderer.load_texture(this.sprops.blur) : null),
@@ -104,8 +93,9 @@ export class shadow {
     step() {
         var _a;
         let pos = pts.add(this.sprops.bind.rpos, this.sprite.rposoffset);
+        pos = pts.add(pos, this.sprops.shadow_length);
         this.mesh.rotation.z = this.sprops.bind.r;
-        (_a = this.mesh) === null || _a === void 0 ? void 0 : _a.position.fromArray([...pts.add(pos, this.sprops.shadowLength), this.sprops.z - 0.5]);
+        (_a = this.mesh) === null || _a === void 0 ? void 0 : _a.position.fromArray([...pos, this.sprops.z - 0.5]);
         this.mesh.updateMatrix();
     }
 }
