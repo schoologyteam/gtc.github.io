@@ -103,6 +103,7 @@ export class view {
         crunch += '<br />';
         crunch += `controls: click to run, R+F to zoom, C to toggle walk, WASD to move camera<br />`;
         app.set_html('.stats', crunch);
+        app.set_style('.stats', 'visibility', 'hidden');
     }
 }
 export default view;

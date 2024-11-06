@@ -231,7 +231,7 @@ namespace renderer {
 
 		// ambientLight = new THREE.AmbientLight(0x3a454f);
 		ambientLight = new THREE.AmbientLight('white');
-		ambientLight.intensity = 2.5;
+		ambientLight.intensity = 2.7;
 
 		directionalLight = new THREE.DirectionalLight(0x355886, 1.0);
 		directionalLight.position.set(0, 0, 1);
@@ -319,8 +319,8 @@ namespace renderer {
 		});
 		texture.generateMipmaps = false;
 		texture.center.set(0, 1);
-		//texture.magFilter = THREE.NearestFilter;
-		//texture.minFilter = THREE.NearestFilter;
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
 		//texture.magFilter = THREE.LinearFilter;
 		//texture.minFilter = THREE.LinearFilter;
 		mem[key || file] = texture;

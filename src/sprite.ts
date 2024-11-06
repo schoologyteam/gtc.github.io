@@ -202,7 +202,7 @@ function MySpriteMaterial(parameters, uniforms: any) {
 				#ifdef HAS_BLUR
 					vec4 blurColor = texture2D( blurMap, fUv );
 					blurColor.rgb *= 0.0;
-					blurColor.a /= 4.0;
+					blurColor.a /= 6.0;
 					texelColor = blurColor;
 				#endif
 
