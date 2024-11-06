@@ -148,7 +148,9 @@ var app;
     app.last = 0;
     function base_loop() {
         return __awaiter(this, void 0, void 0, function* () {
-            //await new Promise(resolve => setTimeout(resolve, 16.6)); // 60 fps mode
+            // 60 fps mode is 16.3
+            // 30 fps mode is 30.3
+            yield new Promise(resolve => setTimeout(resolve, 16.6));
             const now = (performance || Date).now();
             app.delta = (now - app.last) / 1000;
             app.last = now;

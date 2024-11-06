@@ -19,6 +19,7 @@ export class view {
         this.wpos = zeroes;
         this.mpos = zeroes;
         this.mrpos = zeroes;
+        this.hidden = false;
         new lod.world(10);
     }
     tick() {
@@ -103,7 +104,13 @@ export class view {
         crunch += '<br />';
         crunch += `controls: click to run, R+F to zoom, C to toggle walk, WASD to move camera<br />`;
         app.set_html('.stats', crunch);
-        app.set_style('.stats', 'visibility', 'hidden');
+        if (app.key('h') == app.KEY.PRESSED) {
+            this.hidden = !this.hidden;
+            if (this.hidden)
+                app.set_style('.stats', 'visibility', 'hidden');
+            else
+                app.set_style('.stats', 'visibility', 'visible');
+        }
     }
 }
 export default view;

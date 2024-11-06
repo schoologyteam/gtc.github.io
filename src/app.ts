@@ -137,7 +137,9 @@ namespace app {
 	export var last = 0
 
 	export async function base_loop() {
-		//await new Promise(resolve => setTimeout(resolve, 16.6)); // 60 fps mode
+		// 60 fps mode is 16.3
+		// 30 fps mode is 30.3
+		await new Promise(resolve => setTimeout(resolve, 16.6));
 		const now = (performance || Date).now();
 		delta = (now - last) / 1000;
 		last = now;

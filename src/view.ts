@@ -80,6 +80,7 @@ export class view {
 		let inv = pts.inv(this.rpos);
 		renderer.scene.position.set(inv[0], inv[1], 0);
 	}
+	hidden = false
 	stats() {
 		let crunch = ``;
 		crunch += `DPI_UPSCALED_RT: ${renderer.DPI_UPSCALED_RT}<br /><br />`;
@@ -111,7 +112,13 @@ export class view {
 		crunch += `controls: click to run, R+F to zoom, C to toggle walk, WASD to move camera<br />`;
 		app.set_html('.stats', crunch);
 
-		app.set_style('.stats', 'visibility', 'hidden');
+		if (app.key('h') == app.KEY.PRESSED) {
+			this.hidden = !this.hidden;
+			if (this.hidden)
+				app.set_style('.stats', 'visibility', 'hidden');
+			else
+				app.set_style('.stats', 'visibility', 'visible');
+		}
 	}
 }
 
