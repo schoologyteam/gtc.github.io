@@ -133,6 +133,10 @@ class pts {
 		return [a[0], a[1]];
 	}
 
+	static get _3_2() { // Alias
+        return pts._32;
+    }
+
 	static together(zx: vec2): number {
 		return zx[0] + zx[1];
 	}

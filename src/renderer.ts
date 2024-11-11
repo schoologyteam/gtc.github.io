@@ -231,7 +231,7 @@ namespace renderer {
 
 		// ambientLight = new THREE.AmbientLight(0x3a454f);
 		ambientLight = new THREE.AmbientLight('white');
-		ambientLight.intensity = 2.7;
+		ambientLight.intensity = 2.8;
 
 		directionalLight = new THREE.DirectionalLight(0x355886, 1.0);
 		directionalLight.position.set(0, 0, 1);

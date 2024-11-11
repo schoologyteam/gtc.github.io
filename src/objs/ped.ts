@@ -7,6 +7,7 @@ import glob from "../dep/glob.js";
 
 const ped_uv = [0.125, 0.043478260869565216] as vec2;
 
+ 
 export class ped extends baseobj {
 	remap = -1
 	timer = 0

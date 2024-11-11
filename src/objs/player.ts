@@ -20,11 +20,13 @@ export class player extends ped {
 		super({
 			name: 'a player',
 			...props
-		});
+		});  
 		// Because of the poor type system, type is now ped
 		this.props._type = 'ply';
-		console.log(' ply after super ', this.props);
-		this.remap = 52;
+		console.log(' ply after super ', this);
+		// this.remap = 52; // Pink man
+		// this.remap = gtasmr.sample([52, 47]);
+		// 16 Scrub
 	}
 	protected _step() {
 		this.walking = false;

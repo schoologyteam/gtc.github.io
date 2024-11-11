@@ -2,16 +2,15 @@ import glob from "../dep/glob.js";
 import pts from "../dep/pts.js";
 import lod from "../lod.js";
 
-type oproptype =
-	'Car' | 'Ped' | 'Ply' | 'Block' | 'Floor';
-
 export namespace baseobj {
 
 }
 
+// A Baseobj is used by gtasmr classes
+
 export class baseobj extends lod.obj {
-	r = 0 // rotation
-	z = 0 // third axis
+	r = 0
+	z = 0
 	constructor(public props: propz) {
 		super(undefined);
 		this.wpos = pts.copy(props._wpos);

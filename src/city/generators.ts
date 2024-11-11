@@ -12,22 +12,19 @@ export namespace generators {
 		//chunk.add(data);
 	}
 
-	// todo throw into staging
-	export function invert(
-		data: objprops,
-		axis: axis,
-		w: vec3
-	) {
-		// temp
-		let x = data._wpos[0];
-		let y = data._wpos[0];
-		data._wpos[0] = axis ? y : x;
-		data._wpos[1] = axis ? x : y;
-		data._r = axis;
-		data._wpos[0] += w[0];
-		data._wpos[1] += w[1];
+	// Todo Throw into staging
+	export function invert(props: propz, axis: axis, w: vec3) {
+		// Temp
+		let x = props._wpos[0];
+		let y = props._wpos[0];
+		props._wpos[0] = axis ? y : x;
+		props._wpos[1] = axis ? x : y;
+		props._r = axis;
+		props._wpos[0] += w[0];
+		props._wpos[1] += w[1];
 	}
 
+	// Todo Put into staging
 	export function loopvec3(
 		min: vec3,
 		max: vec3,
@@ -68,7 +65,7 @@ export namespace generators {
 				else if (seg == segs - 1)
 					road._r! -= 1;
 			}
-			staging.add_data(road);
+			staging.add_a_props(road);
 		}
 		if (axis == 0)
 			staging.ccw(1);
@@ -98,7 +95,7 @@ export namespace generators {
 					road.extra.sty = 'sty/roads/grey/676.bmp'; // sideStopLine
 					road.extra.flip = true;
 				}
-				staging.add_data(road);
+				staging.add_a_props(road);
 			}
 		}
 		if (axis == 1)

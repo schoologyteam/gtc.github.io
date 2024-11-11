@@ -12,7 +12,7 @@ export function objfactory(props: propz): baseobj | undefined {
     switch (props._type) {
         case 'dud':
         case 'direct':
-            console.warn(' unset type passed to factory ');
+            console.warn(' dud or direct type passed to factory ');
             break;
         case 'floor':
             obj = new objects.floor(props);

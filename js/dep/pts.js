@@ -99,6 +99,9 @@ class pts {
     static _32(a) {
         return [a[0], a[1]];
     }
+    static get _3_2() {
+        return pts._32;
+    }
     static together(zx) {
         return zx[0] + zx[1];
     }
